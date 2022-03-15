@@ -1,0 +1,91 @@
+﻿<Window x:Class="ChatNaFive.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:fa5="http://schemas.fontawesome.com/icons/"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:local="clr-namespace:ChatNaFive"
+        mc:Ignorable="d"
+        Height="450" Width="800" WindowStyle="None">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="20"></RowDefinition>
+            <!--Для вывода ошибок или сообщений-->
+        </Grid.RowDefinitions>
+
+        <Grid Name="ToolBar" Grid.Row="0">
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+
+                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center"  Text="ChatHaHa"/>
+
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+
+                <StackPanel Orientation="Horizontal" Margin="0, 0, 5, 0">
+                    <fa5:ImageAwesome Icon="Solid_WindowMinimize" Height="6"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0, 0, 5, 0">
+                    <fa5:ImageAwesome Icon="Solid_WindowRestore" Height="25"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0, 0, 5, 0">
+                    <fa5:ImageAwesome Icon="Solid_WindowClose" Height="25"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <!--Разделение на подключенных пользователей и чат-->
+            <Grid.ColumnDefinitions> 
+                <ColumnDefinition Width="150"></ColumnDefinition>
+                <ColumnDefinition Width="*" ></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <!--Разделение полей на настройки и подключенных пользователей-->
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <TextBlock Text="Подключенные пользователи" VerticalAlignment="Center" 
+                               HorizontalAlignment="Left" Grid.Column="1" 
+                               Margin="0,0,0,0">
+                        
+                    </TextBlock>
+                </Grid>
+
+                <Grid Grid.Row="1">
+                    <TextBlock Text="Настройки" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+                </Grid>
+            </Grid>
+
+            <!--Разделение пользователя, чат и ввод сообщения-->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="40"></RowDefinition>
+                    <RowDefinition Height="*"></RowDefinition>
+                    <RowDefinition Height="40"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0">
+                    <TextBlock Text="Информация о чате / о аккаунте" VerticalAlignment="Center" 
+                               HorizontalAlignment="Left" Grid.Column="1" 
+                               Margin="0,0,0,0">
+                    </TextBlock>
+                </Grid>
+
+                <Grid Grid.Row="1">
+                    <ListBox>
+                        <TextBlock Text=""></TextBlock>
+                    </ListBox>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

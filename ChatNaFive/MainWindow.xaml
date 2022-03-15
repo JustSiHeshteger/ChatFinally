@@ -40,7 +40,7 @@
 
         <Grid Grid.Row="1">
             <!--Разделение на подключенных пользователей и чат-->
-            <Grid.ColumnDefinitions> 
+            <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="150"></ColumnDefinition>
                 <ColumnDefinition Width="*" ></ColumnDefinition>
             </Grid.ColumnDefinitions>
@@ -56,7 +56,7 @@
                     <TextBlock Text="Подключенные пользователи" VerticalAlignment="Center" 
                                HorizontalAlignment="Left" Grid.Column="1" 
                                Margin="0,0,0,0">
-                        
+
                     </TextBlock>
                 </Grid>
 
@@ -82,8 +82,27 @@
 
                 <Grid Grid.Row="1">
                     <ListBox>
-                        <TextBlock Text=""></TextBlock>
+                        <TextBlock Text="Чат" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
                     </ListBox>
+                </Grid>
+
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                        <ColumnDefinition Width="40"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+
+                    <Grid Grid.Column="0">
+                        <TextBox VerticalAlignment="Center" 
+                                 HorizontalAlignment="Center">
+                        </TextBox>
+                    </Grid>
+
+                    <Grid Grid.Column="1">
+                        <Button >
+                            <fa5:ImageAwesome Icon="Brands_Tiktok" Height="11" Width="11"/>
+                        </Button>
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>

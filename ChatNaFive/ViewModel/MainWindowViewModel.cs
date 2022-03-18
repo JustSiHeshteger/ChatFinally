@@ -1,9 +1,8 @@
-﻿using ChatNaFive.ViewModel.Base;
-using System;
+﻿using ChatNaFive.Infrastructure.Commands;
+using ChatNaFive.ViewModel.Base;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
 
 namespace ChatNaFive.ViewModel
 {
@@ -18,23 +17,9 @@ namespace ChatNaFive.ViewModel
             set => Set(ref _title, value); //Это то, что написали
         }
 
-        private string _name;
-
-        public string Name
+        public MainWindowViewModel()
         {
-            get => _name;
-
-            set => Set(ref _title, value); //Это то, что написали
-        }
-
-        private IEnumerable<string> _messages;
-
-        public IEnumerable<string> Messages
-        {
-            get => _messages;
-            set
-            {
-            }
+            
         }
     }
 }

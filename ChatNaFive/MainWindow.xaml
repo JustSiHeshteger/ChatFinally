@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa5="http://schemas.fontawesome.com/icons/"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:local="clr-namespace:ChatNaFive"
+        xmlns:viewmodel="clr-namespace:ChatNaFive.ViewModel" 
+        xmlns:commands="clr-namespace:ChatNaFive.Infrastructure.Commands"
         mc:Ignorable="d"
         Height="450" Width="800" WindowStyle="None">
     <Grid>
@@ -27,13 +28,29 @@
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
 
                 <StackPanel Orientation="Horizontal" Margin="0, 0, 5, 0">
-                    <fa5:ImageAwesome Icon="Solid_WindowMinimize" Height="6"/>
+                    <Button Padding="0, 0, 0, 0" Background="White" BorderThickness="0">
+                        <fa5:ImageAwesome Icon="Solid_WindowMinimize" Height="6"/>
+                        <Button.Command>
+                            <commands:HideAppkicationCommand/>
+                        </Button.Command>
+                    </Button>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0, 0, 5, 0">
-                    <fa5:ImageAwesome Icon="Solid_WindowRestore" Height="25"/>
+                    <Button Padding="0, 0, 0, 0" Background="White" BorderThickness="0">
+                        <fa5:ImageAwesome Icon="Solid_WindowRestore" Height="25"/>
+                        <Button.Command>
+                            <commands:MaximizedApplicationCommand/>
+                        </Button.Command>
+                    </Button>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0, 0, 5, 0">
-                    <fa5:ImageAwesome Icon="Solid_WindowClose" Height="25"/>
+                    <Button Padding="0, 0, 0, 0" Background="White" BorderThickness="0">
+                        <fa5:ImageAwesome Icon="Solid_WindowClose" Height="25"/>
+                        <Button.Command>
+                            <commands:CloseApplicationCommand/>
+                        </Button.Command>
+                    </Button>
+
                 </StackPanel>
             </StackPanel>
         </Grid>
@@ -74,10 +91,11 @@
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="      *"/>
+                    </Grid.ColumnDefinitions>
                     <TextBlock Text="Информация о чате / о аккаунте" VerticalAlignment="Center" 
-                               HorizontalAlignment="Left" Grid.Column="1" 
-                               Margin="0,0,0,0">
-                    </TextBlock>
+                               HorizontalAlignment="Left"/>
                 </Grid>
 
                 <Grid Grid.Row="1">
@@ -99,8 +117,8 @@
                     </Grid>
 
                     <Grid Grid.Column="1">
-                        <Button >
-                            <fa5:ImageAwesome Icon="Brands_Tiktok" Height="11" Width="11"/>
+                        <Button Padding="0, 0, 0, 0">
+                            <fa5:ImageAwesome Icon="Brands_Tiktok" Height="20" Width="20"/>
                         </Button>
                     </Grid>
                 </Grid>

@@ -6,10 +6,14 @@
         xmlns:local="clr-namespace:ChatNaFive"
         xmlns:commands="clr-namespace:ChatNaFive.Infrastructure.Commands"
         xmlns:fa5="http://schemas.fontawesome.com/icons/"
-        xmlns:vm="clr-namespace:ChatNaFive.ViewModel"
+        xmlns:viewmodel="clr-namespace:ChatNaFive.ViewModel"
         mc:Ignorable="d"
-        Title="UserLoginForm" Height="450" Width="400" WindowStyle="None"
+        Height="450" Width="400" WindowStyle="None"
         MaxHeight="450" MaxWidth="400" MinHeight="450" MinWidth="400">
+
+    <Window.DataContext>
+        <viewmodel:MainWindowViewModel/>
+    </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"></RowDefinition>
@@ -21,7 +25,8 @@
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
 
-                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="" LineHeight="9" TextAlignment="Center" FontFamily="Arial Black" FontSize="16">
+                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" LineHeight="9" TextAlignment="Center" FontFamily="Arial Black" FontSize="16"
+                           Text="{Binding Path=Title}">
                     
                 </TextBlock>
 
@@ -70,7 +75,7 @@
                 
                 <Grid Grid.Row="1">
                     <TextBox Width="200">
-
+                        
                     </TextBox>
                 </Grid>
             </Grid>

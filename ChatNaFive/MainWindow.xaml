@@ -5,10 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa5="http://schemas.fontawesome.com/icons/"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:vm="clr-namespace:ChatNaFive.ViewModel"
+        xmlns:viewmodel="clr-namespace:ChatNaFive.ViewModel"
         xmlns:commands="clr-namespace:ChatNaFive.Infrastructure.Commands"
         mc:Ignorable="d"
         Height="450" Width="800" WindowStyle="None">
+
+    <Window.DataContext>
+        <viewmodel:MainWindowViewModel/>
+    </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="30"></RowDefinition>
@@ -21,8 +25,7 @@
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
 
-                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center">
-                    
+                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Path=Title}">
                 </TextBlock>
 
             </StackPanel>
@@ -98,7 +101,7 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="      *"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="Информация о чате / о аккаунте" VerticalAlignment="Center" 
+                    <TextBlock Text="{Binding Path=UserName}" VerticalAlignment="Center" 
                                HorizontalAlignment="Left"/>
                 </Grid>
 

@@ -1,0 +1,88 @@
+﻿<Window x:Class="ChatNaFive.UserLoginForm"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ChatNaFive"
+        xmlns:commands="clr-namespace:ChatNaFive.Infrastructure.Commands"
+        xmlns:fa5="http://schemas.fontawesome.com/icons/"
+        xmlns:vm="clr-namespace:ChatNaFive.ViewModel"
+        mc:Ignorable="d"
+        Title="UserLoginForm" Height="450" Width="400" WindowStyle="None"
+        MaxHeight="450" MaxWidth="400" MinHeight="450" MinWidth="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition Height="20"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <Grid Name="ToolBar" Grid.Row="0">
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+
+                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="" LineHeight="9" TextAlignment="Center" FontFamily="Arial Black" FontSize="16">
+                    
+                </TextBlock>
+
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+
+                <StackPanel Orientation="Horizontal" Margin="0, 0, 5, 0">
+                    <Button Padding="0, 0, 0, 0" Background="White" BorderThickness="0"
+                            BorderBrush="White">
+                        <fa5:ImageAwesome Icon="Solid_WindowMinimize" Height="6"/>
+                        <Button.Command>
+                            <commands:HideAppkicationCommand/>
+                        </Button.Command>
+                    </Button>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="0, 0, 5, 0">
+                    <Button Padding="0, 0, 0, 0" Background="White" BorderThickness="0">
+                        <fa5:ImageAwesome Icon="Solid_WindowClose" Height="25"/>
+                        <Button.Command>
+                            <commands:CloseApplicationCommand/>
+                        </Button.Command>
+                    </Button>
+
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+
+        <Grid x:Name="Login" Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                
+                <Grid Grid.Row="0">
+                    <TextBlock Text="Введите имя" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,40" FontFamily="Arial Black" FontSize="16">
+
+                    </TextBlock>
+                </Grid>
+                
+                <Grid Grid.Row="1">
+                    <TextBox Width="200">
+
+                    </TextBox>
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <Button Width="100">
+                    <Button.Command>
+                        <commands:EntreInChatCommand/>
+                    </Button.Command>
+                    <TextBlock Text="Войти"/>
+                </Button>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

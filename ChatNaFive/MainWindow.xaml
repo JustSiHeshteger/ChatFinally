@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fa5="http://schemas.fontawesome.com/icons/"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:viewmodel="clr-namespace:ChatNaFive.ViewModel" 
+        xmlns:vm="clr-namespace:ChatNaFive.ViewModel"
         xmlns:commands="clr-namespace:ChatNaFive.Infrastructure.Commands"
         mc:Ignorable="d"
         Height="450" Width="800" WindowStyle="None">
@@ -21,7 +21,9 @@
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
 
-                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center"  Text="ChatHaHa"/>
+                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center">
+                    
+                </TextBlock>
 
             </StackPanel>
 

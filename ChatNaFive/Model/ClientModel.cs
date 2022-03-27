@@ -13,8 +13,8 @@ namespace ChatNaFive.Model
         private string _userName;
         private string _outputMessage;
         private string _inputMessage;
-        private const string host = "";
-        private const int port = 1337;
+        private const string host = "92.101.223.197";
+        private const int port = 9002;
         private TcpClient client;
         private NetworkStream stream;
 

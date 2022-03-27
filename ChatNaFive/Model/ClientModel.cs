@@ -8,35 +8,34 @@ using System.Threading.Tasks;
 
 namespace ChatNaFive.Model
 {
-    internal static class ClientModel
+    internal class ClientModel
     {
-        private static string _userName;
-        private static string _outputMessage;
-        private static MessageInfo _inputMessage;
+        private string _userName;
+        private string _outputMessage;
+        private string _inputMessage;
         private const string host = "";
         private const int port = 1337;
-        static TcpClient client;
-        static NetworkStream stream;
+        private TcpClient client;
+        private NetworkStream stream;
 
-        public static string UserName 
+        public string UserName 
         { 
             get => _userName; 
             set => _userName = value; 
         }
-        public static string OtputMessage
+        public string OtputMessage
         {
             get => _outputMessage;
             set => _outputMessage = value;
         }
-        public static MessageInfo InputMessage
+        public string InputMessage
         {
             get => _inputMessage;
             set => _inputMessage = value;
         }
 
-        public static void ConnectAsync()
+        public void ConnectAsync()
         {
-            UserName = Console.ReadLine();
             client = new TcpClient();
             try
             {
@@ -65,7 +64,7 @@ namespace ChatNaFive.Model
             }
         }
         // отправка сообщений
-        static void SendMessage()
+        public void SendMessage()
         {
             while (true)
             {
@@ -74,7 +73,7 @@ namespace ChatNaFive.Model
             }
         }
         // получение сообщений
-        static void ReceiveMessage()
+        void ReceiveMessage()
         {
             while (true)
             {
@@ -92,12 +91,7 @@ namespace ChatNaFive.Model
 
                     string message = builder.ToString();
 
-                    InputMessage = new MessageInfo
-                    {
-                        ClientName = UserName,
-                        DateTime = DateTime.Now,
-                        Message = message
-                    };//вывод сообщения
+                    InputMessage = $"{UserName}  {message}";//вывод сообщения
                 }
                 catch
                 {
@@ -107,13 +101,12 @@ namespace ChatNaFive.Model
             }
         }
 
-        static void Disconnect()
+        void Disconnect()
         {
             if (stream != null)
                 stream.Close();//отключение потока
             if (client != null)
                 client.Close();//отключение клиента
-            Environment.Exit(0); //завершение процесса
         }
     }
 }

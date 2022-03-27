@@ -103,12 +103,12 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="{Binding Path=UserName}" VerticalAlignment="Center" 
                                HorizontalAlignment="Left"/>
+                    <TextBox TextWrapping="Wrap" Margin="1,2,415,10" Text="{Binding UserName}"/>
+                    <Button Content="Button" HorizontalAlignment="Left" Margin="303,0,0,0" VerticalAlignment="Center" Command="{Binding EnterInChatCommand}"/>
                 </Grid>
 
                 <Grid Grid.Row="1">
-                    <ListBox ItemsSource="{Binding Message}">
-                        
-                    </ListBox>
+                    <TextBlock Text="{Binding InputMessage}" FontSize="14"/>
                 </Grid>
 
                 <Grid Grid.Row="2">
@@ -118,12 +118,12 @@
                     </Grid.ColumnDefinitions>
 
                     <Grid Grid.Column="0">
-                        <TextBox HorizontalAlignment="Center" Margin="0,10,0,0" Text="TextBox" TextWrapping="Wrap" VerticalAlignment="Top" Width="508" Height="30"/>
+                        <TextBox HorizontalAlignment="Center" Margin="0,10,0,0" Text="{Binding Message}" TextWrapping="Wrap" VerticalAlignment="Top" Width="508" Height="30"/>
 
                     </Grid>
 
                     <Grid Grid.Column="1">
-                        <Button Padding="0, 0, 0, 0">
+                        <Button Padding="0, 0, 0, 0" Command="{Binding SendMessageCommand}">
                             <fa5:ImageAwesome Icon="Brands_Tiktok" Height="20" Width="20"/>
                         </Button>
                     </Grid>

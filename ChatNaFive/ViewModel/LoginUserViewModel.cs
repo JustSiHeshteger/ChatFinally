@@ -46,8 +46,6 @@ namespace ChatNaFive.ViewModel
                 }
             }
 
-            ClientModel.UserName = this.UserName;
-            Thread th = new Thread(ClientModel.ConnectAsync);
         }
         private bool CanEnterInChatCommandExecute(object p) => true;
 

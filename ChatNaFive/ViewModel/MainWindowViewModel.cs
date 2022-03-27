@@ -1,13 +1,26 @@
 ﻿using ChatNaFive.ViewModel.Base;
 using System.Collections.ObjectModel;
 using ChatNaFive.Model;
+using System.Collections.Generic;
+using System.Windows.Input;
+using System.Threading.Tasks;
+using ChatNaFive.Infrastructure.Commands;
 
 namespace ChatNaFive.ViewModel
 {
     internal class MainWindowViewModel : ViewModelBase
     {
         private string _title = "ChatHaHa";
+        private string _message;
         private string _userName;
+        private string _inputMessage;
+        private ClientModel model;
+
+        public string Message
+        {
+            get => _message;
+            set => Set(ref _message, value);
+        }
 
         public string Title
         {
@@ -23,19 +36,51 @@ namespace ChatNaFive.ViewModel
             set => Set(ref _userName, value);
         }
 
-        private ObservableCollection<MessageInfo> Messages { get; set; }
-        public ObservableCollection<MessageInfo> Message
+        public string InputMessage
         {
-            get => Messages;
-            set
-            {
-                Messages.Add(ClientModel.InputMessage);
-            }
+            get => _inputMessage;
+            set => Set(ref _inputMessage, model.InputMessage);
         }
+
+        #region Кнопка подключения
+        public ICommand EnterInChatCommand { get; }
+
+        private void OnEnterInChatCommandExecuted(object p)
+        {
+            
+            Task.Run(() =>
+            {
+                model.UserName = UserName;
+                model.ConnectAsync();
+            });
+        }
+
+        #endregion
+
+        #region Кнопка отправки ссобщения
+
+        public ICommand SendMessageCommand { get; }
+
+        private void OnSendMessageCommandExecuted(object p)
+        {
+            Task.Run(() =>
+            {
+                model.OtputMessage = Message;
+                model.SendMessage();
+            });
+        }
+
+        private bool CanSendMessageCommandExecute(object p) => true;
+
+        #endregion
+
+        private bool CanEnterInChatCommandExecute(object p) => true;
 
         public MainWindowViewModel()
         {
-            Message = new ObservableCollection<MessageInfo>();
+            EnterInChatCommand = new ActionCommand(OnEnterInChatCommandExecuted, CanEnterInChatCommandExecute);
+            SendMessageCommand = new ActionCommand(OnSendMessageCommandExecuted, CanSendMessageCommandExecute);
+            model = new ClientModel();
         }
     }
 }

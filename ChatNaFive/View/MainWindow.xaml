@@ -99,15 +99,15 @@
 
                 <Grid Grid.Row="0">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="      *"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock Text="{Binding Path=UserName}" VerticalAlignment="Center" 
                                HorizontalAlignment="Left"/>
                 </Grid>
 
                 <Grid Grid.Row="1">
-                    <ListBox>
-                        <TextBlock Text="Чат" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
+                    <ListBox ItemsSource="{Binding Message}">
+                        
                     </ListBox>
                 </Grid>
 

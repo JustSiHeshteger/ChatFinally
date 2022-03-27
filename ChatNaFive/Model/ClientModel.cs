@@ -12,7 +12,7 @@ namespace ChatNaFive.Model
     {
         private static string _userName;
         private static string _outputMessage;
-        private static string _inputMessage;
+        private static MessageInfo _inputMessage;
         private const string host = "";
         private const int port = 1337;
         static TcpClient client;
@@ -28,7 +28,7 @@ namespace ChatNaFive.Model
             get => _outputMessage;
             set => _outputMessage = value;
         }
-        public static string InputMessage
+        public static MessageInfo InputMessage
         {
             get => _inputMessage;
             set => _inputMessage = value;
@@ -91,7 +91,13 @@ namespace ChatNaFive.Model
                     while (stream.DataAvailable);
 
                     string message = builder.ToString();
-                    InputMessage = $"{UserName} {message}";//вывод сообщения
+
+                    InputMessage = new MessageInfo
+                    {
+                        ClientName = UserName,
+                        DateTime = DateTime.Now,
+                        Message = message
+                    };//вывод сообщения
                 }
                 catch
                 {

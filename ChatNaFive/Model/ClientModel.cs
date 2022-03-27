@@ -1,41 +1,63 @@
 ﻿using System;
-using System.Threading;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
-namespace ChatClient
+namespace ChatNaFive.Model
 {
-    class Program
+    internal static class ClientModel
     {
-        static string userName;
-        private const string host = "Ты лох";
+        private static string _userName;
+        private static string _outputMessage;
+        private static string _inputMessage;
+        private const string host = "";
         private const int port = 1337;
         static TcpClient client;
         static NetworkStream stream;
 
-        static void Main()
+        public static string UserName 
+        { 
+            get => _userName; 
+            set => _userName = value; 
+        }
+        public static string OtputMessage
         {
-            Console.Write("Введите свой ник: ");
-            userName = Console.ReadLine();
+            get => _outputMessage;
+            set => _outputMessage = value;
+        }
+        public static string InputMessage
+        {
+            get => _inputMessage;
+            set => _inputMessage = value;
+        }
+
+        public static void ConnectAsync()
+        {
+            UserName = Console.ReadLine();
             client = new TcpClient();
             try
             {
                 client.Connect(host, port); //подключение клиента
                 stream = client.GetStream(); // получаем поток
-
-                string message = userName;
-                byte[] data = Encoding.Unicode.GetBytes(message);
+                
+                byte[] data = Encoding.Unicode.GetBytes(UserName);
                 stream.Write(data, 0, data.Length);
 
                 // запускаем новый поток для получения данных
                 Thread receiveThread = new Thread(new ThreadStart(ReceiveMessage));
                 receiveThread.Start(); //старт потока
-                Console.WriteLine("Ура ура {0}", userName + "в чате");
-                SendMessage();
+                OtputMessage = $"Ура ура {UserName} в чате";
+                Task.Run(() => 
+                {
+                    SendMessage();
+                }); 
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                //Console.WriteLine(ex.Message);
             }
             finally
             {
@@ -45,12 +67,9 @@ namespace ChatClient
         // отправка сообщений
         static void SendMessage()
         {
-            Console.WriteLine("Введите сообщение: ");
-
             while (true)
             {
-                string message = Console.ReadLine();
-                byte[] data = Encoding.Unicode.GetBytes(message);
+                byte[] data = Encoding.Unicode.GetBytes(OtputMessage);
                 stream.Write(data, 0, data.Length);
             }
         }
@@ -62,7 +81,7 @@ namespace ChatClient
                 try
                 {
                     byte[] data = new byte[64]; // буфер для получаемых данных
-                    StringBuilder builder = new StringBuilder();
+                    StringBuilder builder = new();
                     int bytes = 0;
                     do
                     {
@@ -72,12 +91,11 @@ namespace ChatClient
                     while (stream.DataAvailable);
 
                     string message = builder.ToString();
-                    Console.WriteLine(userName + " " + message);//вывод сообщения
+                    InputMessage = $"{UserName} {message}";//вывод сообщения
                 }
                 catch
                 {
-                    Console.WriteLine("Подключение прервано!"); //соединение было прервано
-                    Console.ReadLine();
+                    //Console.WriteLine("Подключение прервано!"); //соединение было прервано
                     Disconnect();
                 }
             }

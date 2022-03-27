@@ -12,7 +12,7 @@
         MaxHeight="450" MaxWidth="400" MinHeight="450" MinWidth="400">
 
     <Window.DataContext>
-        <viewmodel:MainWindowViewModel/>
+        <viewmodel:LoginUserViewModel/>
     </Window.DataContext>
     <Grid>
         <Grid.RowDefinitions>
@@ -25,9 +25,10 @@
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
 
-                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" LineHeight="9" TextAlignment="Center" FontFamily="Arial Black" FontSize="16"
-                           Text="{Binding Path=Title}">
-                    
+                <TextBlock x:Name="UserLoginTB" HorizontalAlignment="Left" 
+                           VerticalAlignment="Center" LineHeight="9" 
+                           TextAlignment="Center" FontFamily="Arial Black" 
+                           FontSize="16">
                 </TextBlock>
 
             </StackPanel>
@@ -55,7 +56,7 @@
             </StackPanel>
         </Grid>
 
-        <Grid x:Name="Login" Grid.Row="1">
+        <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition></RowDefinition>
                 <RowDefinition></RowDefinition>
@@ -74,17 +75,14 @@
                 </Grid>
                 
                 <Grid Grid.Row="1">
-                    <TextBox Width="200">
+                    <TextBox Width="200" Text="{Binding Path=UserName}">
                         
                     </TextBox>
                 </Grid>
             </Grid>
 
             <Grid Grid.Row="1">
-                <Button Width="100">
-                    <Button.Command>
-                        <commands:EntreInChatCommand/>
-                    </Button.Command>
+                <Button Width="100" Command="{Binding EnterInChatCommand}">
                     <TextBlock Text="Войти"/>
                 </Button>
             </Grid>

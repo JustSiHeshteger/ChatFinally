@@ -7,6 +7,12 @@ namespace ChatNaFive.Infrastructure.Commands
     {
         public override bool CanExecute(object parameter) => true;
 
-        public override void Execute(object parameter) => Application.Current.MainWindow.WindowState = WindowState.Minimized; 
+        public override void Execute(object parameter)
+        {
+            foreach (Window window in App.Current.Windows)
+            {
+                window.WindowState = WindowState.Minimized;
+            }
+        }
     }
 }

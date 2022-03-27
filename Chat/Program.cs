@@ -8,8 +8,8 @@ namespace ChatClient
     class Program
     {
         static string userName;
-        private const string host = "Ты лох";
-        private const int port = 1337;
+        private const string host = "92.101.223.197";
+        private const int port = 9002;
         static TcpClient client;
         static NetworkStream stream;
 
@@ -41,6 +41,7 @@ namespace ChatClient
             {
                 Disconnect();
             }
+            Console.ReadKey();
         }
         // отправка сообщений
         static void SendMessage()

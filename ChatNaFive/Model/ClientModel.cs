@@ -49,28 +49,20 @@ namespace ChatNaFive.Model
                 Thread receiveThread = new Thread(new ThreadStart(ReceiveMessage));
                 receiveThread.Start(); //старт потока
                 OtputMessage = $"Ура ура {UserName} в чате";
-                Task.Run(() => 
-                {
-                    SendMessage();
-                }); 
+                
+                SendMessage();
             }
             catch (Exception ex)
             {
                 //Console.WriteLine(ex.Message);
             }
-            finally
-            {
-                Disconnect();
-            }
         }
         // отправка сообщений
         public void SendMessage()
         {
-            while (true)
-            {
+            
                 byte[] data = Encoding.Unicode.GetBytes(OtputMessage);
                 stream.Write(data, 0, data.Length);
-            }
         }
         // получение сообщений
         void ReceiveMessage()

@@ -41,6 +41,7 @@ namespace ChatClient
             {
                 Disconnect();
             }
+            Console.ReadKey();
         }
         // отправка сообщений
         static void SendMessage()

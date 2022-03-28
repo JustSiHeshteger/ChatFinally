@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 
 namespace Server
 {
@@ -14,6 +14,8 @@ namespace Server
         string userName;
         TcpClient client;
         ServerObject server; // объект сервера
+        private BinaryWriter _writer;
+        private BinaryReader _reader;
 
         public ClientObject(TcpClient tcpClient, ServerObject serverObject)
         {
@@ -27,21 +29,24 @@ namespace Server
         {
             try
             {
-                Stream = client.GetStream();
-                // получаем имя пользователя
-                string message = GetMessage();
+                Stream = client.GetStream();// получаем имя пользователя
+                _writer = new BinaryWriter(Stream, Encoding.Unicode, false);
+                _reader = new BinaryReader(Stream, Encoding.Unicode, false);
+
+                string message = _reader.ReadString();
                 userName = message;
 
-                message = userName + " вошел в чат";
-                // посылаем сообщение о входе в чат всем подключенным пользователям
+                message = userName + " вошел в чат"; // посылаем сообщение о входе в чат всем подключенным пользователям
+                
                 server.BroadcastMessage(message, this.Id);
                 Console.WriteLine(message);
+
                 // в бесконечном цикле получаем сообщения от клиента
                 while (true)
                 {
                     try
                     {
-                        message = GetMessage();
+                        message = _reader.ReadString();
                         message = String.Format("{0}: {1}", userName, message);
                         Console.WriteLine(message);
                         server.BroadcastMessage(message, this.Id);
@@ -68,28 +73,17 @@ namespace Server
         }
 
         // чтение входящего сообщения и преобразование в строку
-        private string GetMessage()
-        {
-            byte[] data = new byte[64]; // буфер для получаемых данных
-            StringBuilder builder = new StringBuilder();
-            int bytes = 0;
-            do
-            {
-                bytes = Stream.Read(data, 0, data.Length);
-                builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
-            }
-            while (Stream.DataAvailable);
-
-            return builder.ToString();
-        }
-
-        // закрытие подключения
         protected internal void Close()
         {
             if (Stream != null)
                 Stream.Close();
             if (client != null)
                 client.Close();
+        }
+
+        internal void SendMessage(string message)
+        {
+            this._writer.Write(message);
         }
     }
 }

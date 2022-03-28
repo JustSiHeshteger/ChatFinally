@@ -5,16 +5,38 @@ using System.Collections.Generic;
 using System.Windows.Input;
 using System.Threading.Tasks;
 using ChatNaFive.Infrastructure.Commands;
+using System.Linq;
+using ChatNaFive.Services;
 
 namespace ChatNaFive.ViewModel
 {
     internal class MainWindowViewModel : ViewModelBase
     {
+        #region Поля
+
         private string _title = "ChatHaHa";
-        private string _message;
         private string _userName;
-        private string _inputMessage;
-        private ClientModel model;
+        private string _message;
+        private string _exception;
+        private readonly ClientModel _clientModel;
+        private readonly IContext _context;
+
+        public ObservableCollection<string> Messages { get; }
+
+        #endregion
+
+        #region Свойства
+        public string Title
+        {
+            get => _title;
+            set => Set(ref _title, value); //Это то, что написали
+        }
+
+        public string UserName
+        {
+            get => _userName;
+            set => Set(ref _userName, value);
+        }
 
         public string Message
         {
@@ -22,65 +44,72 @@ namespace ChatNaFive.ViewModel
             set => Set(ref _message, value);
         }
 
-        public string Title
+        public string Exception
         {
-            get => _title;
-
-            set => Set(ref _title, value); //Это то, что написали
+            get => _exception;
+            set => Set(ref _exception, value);
         }
 
-        public string UserName
-        {
-            get => _userName;
+        #endregion
 
-            set => Set(ref _userName, value);
+        #region Методы
+        public void SetReceiveMessage(string message)
+        {
+            _context.Invoke(() => Messages.Add(message));
         }
 
-        public string InputMessage
+        public void SetException(string ex)
         {
-            get => _inputMessage;
-            set => Set(ref _inputMessage, model.InputMessage);
+            Exception = ex;
         }
 
-        #region Кнопка подключения
+        #endregion
+
+        #region Команда для кнопки подключения
+
+        private bool CanEnterInChatCommandExecute(object p) => true;
         public ICommand EnterInChatCommand { get; }
 
         private void OnEnterInChatCommandExecuted(object p)
         {
             
-            
+            Task.Run(() =>
             {
                 model.UserName = UserName;
                 model.ConnectAsync();
-            };
+            });
         }
 
         #endregion
 
-        #region Кнопка отправки ссобщения
+        #region Команда для кнопки отправки сoобщения
 
         public ICommand SendMessageCommand { get; }
 
         private void OnSendMessageCommandExecuted(object p)
         {
-            
+            Task.Run(() =>
             {
                 model.OtputMessage = Message;
                 model.SendMessage();
-            };
+            });
         }
 
         private bool CanSendMessageCommandExecute(object p) => true;
 
         #endregion
 
-        private bool CanEnterInChatCommandExecute(object p) => true;
-
         public MainWindowViewModel()
         {
+            #region Команды
             EnterInChatCommand = new ActionCommand(OnEnterInChatCommandExecuted, CanEnterInChatCommandExecute);
             SendMessageCommand = new ActionCommand(OnSendMessageCommandExecuted, CanSendMessageCommandExecute);
-            model = new ClientModel();
+            #endregion
+
+            _context = new WpfDipatcherContext();
+            _clientModel = new ClientModel(this);
+            var a = Enumerable.Range(1, 20).Select(i => "string");
+            Messages = new ObservableCollection<string>(a);
         }
     }
 }

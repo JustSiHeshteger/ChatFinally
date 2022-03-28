@@ -101,14 +101,16 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <TextBlock Text="{Binding Path=UserName}" VerticalAlignment="Center" 
+                    <TextBlock VerticalAlignment="Center" 
                                HorizontalAlignment="Left"/>
                     <TextBox TextWrapping="Wrap" Margin="1,2,415,10" Text="{Binding UserName}"/>
                     <Button Content="Button" HorizontalAlignment="Left" Margin="303,0,0,0" VerticalAlignment="Center" Command="{Binding EnterInChatCommand}"/>
                 </Grid>
 
                 <Grid Grid.Row="1">
-                    <TextBlock Text="{Binding InputMessage}" FontSize="14"/>
+                    <ListBox ItemsSource="{Binding Messages}">
+                        
+                    </ListBox>
                 </Grid>
 
                 <Grid Grid.Row="2">
@@ -129,6 +131,10 @@
                     </Grid>
                 </Grid>
             </Grid>
+        </Grid>
+
+        <Grid Grid.Row="3">
+            <TextBlock Text="{Binding Exception}"></TextBlock>
         </Grid>
     </Grid>
 </Window>

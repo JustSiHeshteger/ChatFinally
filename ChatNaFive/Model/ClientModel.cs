@@ -1,97 +1,119 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ChatNaFive.ViewModel;
 
 namespace ChatNaFive.Model
 {
     internal class ClientModel
     {
-        private string _userName;
-        private string _outputMessage;
-        private string _inputMessage;
         private const string host = "92.101.223.197";
         private const int port = 9002;
+
+        private string _userName;
         private TcpClient client;
         private NetworkStream stream;
+        private BinaryReader _reader;
+        private BinaryWriter _writer;
+        private MainWindowViewModel _mvvm;
 
+        public ClientModel(MainWindowViewModel mvvm)
+        {
+            if (mvvm != null)
+                this.MVVM = mvvm;
+        }
         public string UserName 
         { 
             get => _userName; 
             set => _userName = value; 
         }
-        public string OtputMessage
+        public  MainWindowViewModel MVVM
         {
-            get => _outputMessage;
-            set => _outputMessage = value;
-        }
-        public string InputMessage
-        {
-            get => _inputMessage;
-            set => _inputMessage = value;
+            get => _mvvm;
+            set => _mvvm = value;
         }
 
-        public void ConnectAsync()
+        async public void ConnectAsync()
         {
-            client = new TcpClient();
+            await Task.Run(() => 
+            {
+                client = new TcpClient();
+                try
+                {
+                    client.Connect(host, port);
+                    stream = client.GetStream(); // получаем поток
+                    _reader = new BinaryReader(stream, Encoding.Unicode, true);
+                    _writer = new BinaryWriter(stream, Encoding.Unicode, true);
+
+                    client.Connect(host, port); //подключение клиента
+                    _writer.Write(UserName);
+
+                    // запускаем новый поток для получения данных
+                    Thread receiveThread = new(ReceiveMessage); //Было new Thread(new ThreadStart(ReceiveMessage))
+                    receiveThread.Start(); //старт потока
+                }
+                catch (Exception ex)
+                {
+                    MVVM.SetException(ex.Message);
+                }
+            });
+        }
+
+        // отправка сообщений
+        public void SendMessage(string OtputMessage)
+        {
             try
             {
-                client.Connect(host, port); //подключение клиента
-                stream = client.GetStream(); // получаем поток
-                
-                byte[] data = Encoding.Unicode.GetBytes(UserName);
-                stream.Write(data, 0, data.Length);
-
-                // запускаем новый поток для получения данных
-                Thread receiveThread = new Thread(new ThreadStart(ReceiveMessage));
-                receiveThread.Start(); //старт потока
-                OtputMessage = $"Ура ура {UserName} в чате";
-                
-                SendMessage();
+                if (_writer != null) 
+                    _writer.Write(OtputMessage);
             }
             catch (Exception ex)
             {
-                //Console.WriteLine(ex.Message);
+                MVVM.SetException(ex.Message);
             }
         }
-        // отправка сообщений
-        public void SendMessage()
-        {
-            
-                byte[] data = Encoding.Unicode.GetBytes(OtputMessage);
-                stream.Write(data, 0, data.Length);
-        }
+
         // получение сообщений
-        void ReceiveMessage()
+        private void ReceiveMessage()
         {
             while (true)
             {
                 try
                 {
-                    byte[] data = new byte[64]; // буфер для получаемых данных
-                    StringBuilder builder = new();
-                    int bytes = 0;
-                    do
-                    {
-                        bytes = stream.Read(data, 0, data.Length);
-                        builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
-                    }
-                    while (stream.DataAvailable);
-
-                    string message = builder.ToString();
-
-                    InputMessage = $"{UserName}  {message}";//вывод сообщения
+                    string message = _reader.ReadString();
+                    MVVM.SetReceiveMessage(message);
                 }
-                catch
+                catch (Exception ex)
                 {
-                    //Console.WriteLine("Подключение прервано!"); //соединение было прервано
+                    MVVM.SetException(ex.Message);
                     Disconnect();
                 }
             }
         }
+
+        //Синхронный метод считывания сообщений (Вызывать через Task.Run)
+        //private IEnumerable<string> ReceiveMessage()
+        //{
+        //    while (true)
+        //    {
+        //        try
+        //        {
+        //            string message = _reader.ReadString();
+        //            if (!string.IsNullOrWhiteSpace(message))
+        //                yield return message;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            MVVM.SetException(ex.Message);
+        //            Disconnect();
+        //        }
+        //    }
+        //}
 
         void Disconnect()
         {

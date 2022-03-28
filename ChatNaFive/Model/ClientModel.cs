@@ -6,36 +6,36 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using ChatNaFive.ViewModel;
 
 namespace ChatNaFive.Model
 {
     internal class ClientModel
     {
-        private string _userName;
-        private string _outputMessage;
-        private string _inputMessage;
         private const string host = "92.101.223.197";
         private const int port = 9002;
+
+        private string _userName;
         private TcpClient client;
-        public NetworkStream stream;
+        private NetworkStream stream;
         private BinaryReader _reader;
         private BinaryWriter _writer;
+        private MainWindowViewModel _mvvm;
 
-        public string Exception { get; private set; }
+        public ClientModel(MainWindowViewModel mvvm)
+        {
+            if (mvvm != null)
+                this.MVVM = mvvm;
+        }
         public string UserName 
         { 
             get => _userName; 
             set => _userName = value; 
         }
-        public string OtputMessage
+        public  MainWindowViewModel MVVM
         {
-            get => _outputMessage;
-            set => _outputMessage = value;
-        }
-        public string InputMessage
-        {
-            get => _inputMessage;
-            set => _inputMessage = value;
+            get => _mvvm;
+            set => _mvvm = value;
         }
 
         async public void ConnectAsync()
@@ -51,23 +51,31 @@ namespace ChatNaFive.Model
                     _writer = new BinaryWriter(stream, Encoding.Unicode, true);
 
                     client.Connect(host, port); //подключение клиента
-                    _writer.Write(UserName + "бонжур");
+                    _writer.Write(UserName);
 
                     // запускаем новый поток для получения данных
-                    Thread receiveThread = new Thread(ReceiveMessage);
+                    Thread receiveThread = new(ReceiveMessage); //Было new Thread(new ThreadStart(ReceiveMessage))
                     receiveThread.Start(); //старт потока
                 }
                 catch (Exception ex)
                 {
-                    this.Exception = ex.Message;
+                    MVVM.SetException(ex.Message);
                 }
             });
         }
 
         // отправка сообщений
-        public void SendMessage()
+        public void SendMessage(string OtputMessage)
         {
-            _writer.Write(OtputMessage);
+            try
+            {
+                if (_writer != null) 
+                    _writer.Write(OtputMessage);
+            }
+            catch (Exception ex)
+            {
+                MVVM.SetException(ex.Message);
+            }
         }
 
         // получение сообщений
@@ -77,17 +85,35 @@ namespace ChatNaFive.Model
             {
                 try
                 {
-
                     string message = _reader.ReadString();
-                    InputMessage = $"{UserName}  {message}";//вывод сообщения
+                    MVVM.SetReceiveMessage(message);
                 }
                 catch (Exception ex)
                 {
-                    this.Exception = ex.Message;
+                    MVVM.SetException(ex.Message);
                     Disconnect();
                 }
             }
         }
+
+        //Синхронный метод считывания сообщений (Вызывать через Task.Run)
+        //private IEnumerable<string> ReceiveMessage()
+        //{
+        //    while (true)
+        //    {
+        //        try
+        //        {
+        //            string message = _reader.ReadString();
+        //            if (!string.IsNullOrWhiteSpace(message))
+        //                yield return message;
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            MVVM.SetException(ex.Message);
+        //            Disconnect();
+        //        }
+        //    }
+        //}
 
         void Disconnect()
         {

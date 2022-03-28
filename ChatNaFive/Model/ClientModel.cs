@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
@@ -16,8 +17,11 @@ namespace ChatNaFive.Model
         private const string host = "92.101.223.197";
         private const int port = 9002;
         private TcpClient client;
-        private NetworkStream stream;
+        public NetworkStream stream;
+        private BinaryReader _reader;
+        private BinaryWriter _writer;
 
+        public string Exception { get; private set; }
         public string UserName 
         { 
             get => _userName; 
@@ -34,60 +38,52 @@ namespace ChatNaFive.Model
             set => _inputMessage = value;
         }
 
-        public void ConnectAsync()
+        async public void ConnectAsync()
         {
-            client = new TcpClient();
-            try
+            await Task.Run(() => 
             {
-                client.Connect(host, port); //подключение клиента
-                stream = client.GetStream(); // получаем поток
-                
-                byte[] data = Encoding.Unicode.GetBytes(UserName);
-                stream.Write(data, 0, data.Length);
+                client = new TcpClient();
+                try
+                {
+                    client.Connect(host, port);
+                    stream = client.GetStream(); // получаем поток
+                    _reader = new BinaryReader(stream, Encoding.Unicode, true);
+                    _writer = new BinaryWriter(stream, Encoding.Unicode, true);
 
-                // запускаем новый поток для получения данных
-                Thread receiveThread = new Thread(new ThreadStart(ReceiveMessage));
-                receiveThread.Start(); //старт потока
-                OtputMessage = $"Ура ура {UserName} в чате";
-                
-                SendMessage();
-            }
-            catch (Exception ex)
-            {
-                //Console.WriteLine(ex.Message);
-            }
+                    client.Connect(host, port); //подключение клиента
+                    _writer.Write(UserName + "бонжур");
+
+                    // запускаем новый поток для получения данных
+                    Thread receiveThread = new Thread(ReceiveMessage);
+                    receiveThread.Start(); //старт потока
+                }
+                catch (Exception ex)
+                {
+                    this.Exception = ex.Message;
+                }
+            });
         }
+
         // отправка сообщений
         public void SendMessage()
         {
-            
-                byte[] data = Encoding.Unicode.GetBytes(OtputMessage);
-                stream.Write(data, 0, data.Length);
+            _writer.Write(OtputMessage);
         }
+
         // получение сообщений
-        void ReceiveMessage()
+        private void ReceiveMessage()
         {
             while (true)
             {
                 try
                 {
-                    byte[] data = new byte[64]; // буфер для получаемых данных
-                    StringBuilder builder = new();
-                    int bytes = 0;
-                    do
-                    {
-                        bytes = stream.Read(data, 0, data.Length);
-                        builder.Append(Encoding.Unicode.GetString(data, 0, bytes));
-                    }
-                    while (stream.DataAvailable);
 
-                    string message = builder.ToString();
-
+                    string message = _reader.ReadString();
                     InputMessage = $"{UserName}  {message}";//вывод сообщения
                 }
-                catch
+                catch (Exception ex)
                 {
-                    //Console.WriteLine("Подключение прервано!"); //соединение было прервано
+                    this.Exception = ex.Message;
                     Disconnect();
                 }
             }

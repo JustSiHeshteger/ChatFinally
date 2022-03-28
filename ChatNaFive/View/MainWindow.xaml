@@ -130,5 +130,9 @@
                 </Grid>
             </Grid>
         </Grid>
+
+        <Grid Grid.Row="3">
+            <TextBlock Text="{Binding Exception}"></TextBlock>
+        </Grid>
     </Grid>
 </Window>

@@ -11,9 +11,10 @@ namespace ChatNaFive.ViewModel
     internal class MainWindowViewModel : ViewModelBase
     {
         private string _title = "ChatHaHa";
-        private string _message;
-        private string _userName;
-        private string _inputMessage;
+        private string _message = "";
+        private string _userName = "";
+        private string _inputMessage = "";
+        private string _exception = "";
         private ClientModel model;
 
         public string Message
@@ -25,14 +26,12 @@ namespace ChatNaFive.ViewModel
         public string Title
         {
             get => _title;
-
             set => Set(ref _title, value); //Это то, что написали
         }
 
         public string UserName
         {
             get => _userName;
-
             set => Set(ref _userName, value);
         }
 
@@ -42,32 +41,32 @@ namespace ChatNaFive.ViewModel
             set => Set(ref _inputMessage, model.InputMessage);
         }
 
+        public string Exception
+        {
+            get => _exception;
+            set => _exception = model.Exception;
+        }
+
         #region Кнопка подключения
         public ICommand EnterInChatCommand { get; }
 
         private void OnEnterInChatCommandExecuted(object p)
         {
-            
-            Task.Run(() =>
-            {
-                model.UserName = UserName;
-                model.ConnectAsync();
-            });
+            model.UserName = UserName;
+            model.ConnectAsync();
         }
 
         #endregion
 
-        #region Кнопка отправки ссобщения
+        #region Кнопка отправки сoобщения
 
         public ICommand SendMessageCommand { get; }
 
         private void OnSendMessageCommandExecuted(object p)
         {
-            Task.Run(() =>
-            {
-                model.OtputMessage = Message;
-                model.SendMessage();
-            });
+            
+            model.OtputMessage = Message;
+            model.SendMessage();
         }
 
         private bool CanSendMessageCommandExecute(object p) => true;

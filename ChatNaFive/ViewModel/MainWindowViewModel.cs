@@ -48,11 +48,11 @@ namespace ChatNaFive.ViewModel
         private void OnEnterInChatCommandExecuted(object p)
         {
             
-            Task.Run(() =>
+            
             {
                 model.UserName = UserName;
                 model.ConnectAsync();
-            });
+            };
         }
 
         #endregion
@@ -63,11 +63,11 @@ namespace ChatNaFive.ViewModel
 
         private void OnSendMessageCommandExecuted(object p)
         {
-            Task.Run(() =>
+            
             {
                 model.OtputMessage = Message;
                 model.SendMessage();
-            });
+            };
         }
 
         private bool CanSendMessageCommandExecute(object p) => true;

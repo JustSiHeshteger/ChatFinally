@@ -31,7 +31,7 @@ namespace Server
         {
             try
             {
-                tcpListener = new TcpListener(IPAddress.Any, 1337);
+                tcpListener = new TcpListener(IPAddress.Any, 9002);
                 tcpListener.Start();
                 Console.WriteLine("Сервер запущен. Ожидание подключений...");
 

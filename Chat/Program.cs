@@ -9,7 +9,7 @@ namespace ChatClient
     {
         static string userName;
         private const string host = "Ты лох";
-        private const int port = 1337;
+        private const int port = 1338;
         static TcpClient client;
         static NetworkStream stream;
 

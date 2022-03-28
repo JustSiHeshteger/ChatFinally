@@ -108,8 +108,7 @@ namespace ChatNaFive.ViewModel
 
             _context = new WpfDipatcherContext();
             _clientModel = new ClientModel(this);
-            var a = Enumerable.Range(1, 20).Select(i => "string");
-            Messages = new ObservableCollection<string>(a);
+            Messages = new ObservableCollection<string>();
         }
     }
 }

@@ -2,20 +2,22 @@
 using System.Threading;
 using System.Net.Sockets;
 using System.Text;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace ChatClient
 {
     class Program
     {
         static string userName;
-        private const string host = "Ты лох";
-        private const int port = 1338;
+        private const string host = "92.101.223.197";
+        private const int port = 9002;
         static TcpClient client;
         static NetworkStream stream;
 
-        static void Main()
+        static void Main(string[] args)
         {
-            Console.Write("Введите свой ник: ");
+            Console.Write("Введите свое имя: ");
             userName = Console.ReadLine();
             client = new TcpClient();
             try
@@ -30,7 +32,7 @@ namespace ChatClient
                 // запускаем новый поток для получения данных
                 Thread receiveThread = new Thread(new ThreadStart(ReceiveMessage));
                 receiveThread.Start(); //старт потока
-                Console.WriteLine("Ура ура {0}", userName + "в чате");
+                Console.WriteLine("Добро пожаловать, {0}", userName);
                 SendMessage();
             }
             catch (Exception ex)
@@ -73,7 +75,7 @@ namespace ChatClient
                     while (stream.DataAvailable);
 
                     string message = builder.ToString();
-                    Console.WriteLine(userName + " " + message);//вывод сообщения
+                    Console.WriteLine(message);//вывод сообщения
                 }
                 catch
                 {

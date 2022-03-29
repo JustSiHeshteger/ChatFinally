@@ -75,8 +75,8 @@ namespace ChatNaFive.ViewModel
             
             Task.Run(() =>
             {
-                model.UserName = UserName;
-                model.ConnectAsync();
+                _clientModel.UserName = UserName;
+                _clientModel.ConnectAsync();
             });
         }
 
@@ -90,8 +90,7 @@ namespace ChatNaFive.ViewModel
         {
             Task.Run(() =>
             {
-                model.OtputMessage = Message;
-                model.SendMessage();
+                _clientModel.SendMessage(this.Message);
             });
         }
 

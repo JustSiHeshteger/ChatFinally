@@ -50,6 +50,7 @@ namespace ChatNaFive.Model
                     _reader = new BinaryReader(stream, Encoding.Unicode, true);
                     _writer = new BinaryWriter(stream, Encoding.Unicode, true);
 
+                    MVVM.SetReceiveMessage($"{UserName} залетел с ноги");
                     _writer.Write(UserName);
 
                     // запускаем новый поток для получения данных
@@ -68,8 +69,11 @@ namespace ChatNaFive.Model
         {
             try
             {
-                if (_writer != null) 
+                if (_writer != null)
+                {
+                    MVVM.SetReceiveMessage($"{OtputMessage}");
                     _writer.Write(OtputMessage);
+                }
             }
             catch (Exception ex)
             {

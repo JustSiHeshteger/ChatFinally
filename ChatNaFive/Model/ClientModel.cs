@@ -50,7 +50,6 @@ namespace ChatNaFive.Model
                     _reader = new BinaryReader(stream, Encoding.Unicode, true);
                     _writer = new BinaryWriter(stream, Encoding.Unicode, true);
 
-                    client.Connect(host, port); //подключение клиента
                     _writer.Write(UserName);
 
                     // запускаем новый поток для получения данных
@@ -95,25 +94,6 @@ namespace ChatNaFive.Model
                 }
             }
         }
-
-        //Синхронный метод считывания сообщений (Вызывать через Task.Run)
-        //private IEnumerable<string> ReceiveMessage()
-        //{
-        //    while (true)
-        //    {
-        //        try
-        //        {
-        //            string message = _reader.ReadString();
-        //            if (!string.IsNullOrWhiteSpace(message))
-        //                yield return message;
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            MVVM.SetException(ex.Message);
-        //            Disconnect();
-        //        }
-        //    }
-        //}
 
         void Disconnect()
         {

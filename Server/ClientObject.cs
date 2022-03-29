@@ -7,15 +7,14 @@ using System.IO;
 
 namespace Server
 {
-    class ClientObject
+    public class ClientObject
     {
         protected internal string Id { get; private set; }
         protected internal NetworkStream Stream { get; private set; }
         string userName;
         TcpClient client;
         ServerObject server; // объект сервера
-        private BinaryWriter _writer;
-        private BinaryReader _reader;
+        BinaryWriter _writer;
 
         public ClientObject(TcpClient tcpClient, ServerObject serverObject)
         {
@@ -29,18 +28,19 @@ namespace Server
         {
             try
             {
-                Stream = client.GetStream();// получаем имя пользователя
-                _writer = new BinaryWriter(Stream, Encoding.Unicode, false);
-                _reader = new BinaryReader(Stream, Encoding.Unicode, false);
+                Stream = client.GetStream();
 
+                _writer = new BinaryWriter(Stream, Encoding.Unicode, false);
+                var _reader = new BinaryReader(Stream, Encoding.Unicode, false);
+
+                // получаем имя пользователя
                 string message = _reader.ReadString();
                 userName = message;
+                message = userName + " вошел в чат";
 
-                message = userName + " вошел в чат"; // посылаем сообщение о входе в чат всем подключенным пользователям
-                
+                // посылаем сообщение о входе в чат всем подключенным пользователям
                 server.BroadcastMessage(message, this.Id);
                 Console.WriteLine(message);
-
                 // в бесконечном цикле получаем сообщения от клиента
                 while (true)
                 {
@@ -73,17 +73,18 @@ namespace Server
         }
 
         // чтение входящего сообщения и преобразование в строку
+        internal void SendMessage(string message)
+        {
+            this._writer.Write(message);
+        }
+
+        // закрытие подключения
         protected internal void Close()
         {
             if (Stream != null)
                 Stream.Close();
             if (client != null)
                 client.Close();
-        }
-
-        internal void SendMessage(string message)
-        {
-            this._writer.Write(message);
         }
     }
 }

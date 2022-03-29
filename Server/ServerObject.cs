@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Server
 {
-    class ServerObject
+    public class ServerObject
     {
         static TcpListener tcpListener; // сервер для прослушивания
         List<ClientObject> clients = new List<ClientObject>(); // все подключения
@@ -18,7 +18,6 @@ namespace Server
         {
             clients.Add(clientObject);
         }
-
         protected internal void RemoveConnection(string id)
         {
             // получаем по id закрытое подключение
@@ -32,13 +31,14 @@ namespace Server
         {
             try
             {
-                tcpListener = new TcpListener(IPAddress.Any, 1337);
+                tcpListener = new TcpListener(IPAddress.Any, 9002);
                 tcpListener.Start();
                 Console.WriteLine("Сервер запущен. Ожидание подключений...");
 
                 while (true)
                 {
                     TcpClient tcpClient = tcpListener.AcceptTcpClient();
+
                     ClientObject clientObject = new ClientObject(tcpClient, this);
                     Thread clientThread = new Thread(new ThreadStart(clientObject.Process));
                     clientThread.Start();
@@ -54,14 +54,14 @@ namespace Server
         // трансляция сообщения подключенным клиентам
         protected internal void BroadcastMessage(string message, string id)
         {
+            byte[] data = Encoding.Unicode.GetBytes(message);
             for (int i = 0; i < clients.Count; i++)
             {
                 if (clients[i].Id != id) // если id клиента не равно id отправляющего
                 {
-                    clients[i].SendMessage(message); //передача данных
+                    clients[i].SendMessage(message);
                 }
             }
-            
         }
         // отключение всех клиентов
         protected internal void Disconnect()

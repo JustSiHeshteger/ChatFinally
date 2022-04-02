@@ -92,6 +92,7 @@ namespace ChatNaFive.ViewModel
             {
                 _clientModel.SendMessage(this.Message);
             });
+            Message = string.Empty;
         }
 
         private bool CanSendMessageCommandExecute(object p) => true;

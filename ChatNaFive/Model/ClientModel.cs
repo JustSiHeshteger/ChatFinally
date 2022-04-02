@@ -71,7 +71,6 @@ namespace ChatNaFive.Model
             {
                 if (_writer != null)
                 {
-                    MVVM.SetReceiveMessage($"{OtputMessage}");
                     _writer.Write(OtputMessage);
                 }
             }

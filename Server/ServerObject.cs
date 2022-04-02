@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,7 +13,7 @@ namespace Server
     public class ServerObject
     {
         static TcpListener tcpListener; // сервер для прослушивания
-        List<ClientObject> clients = new List<ClientObject>(); // все подключения
+        readonly List<ClientObject> clients = new List<ClientObject>(); // все подключения
 
         protected internal void AddConnection(ClientObject clientObject)
         {
@@ -54,15 +55,13 @@ namespace Server
         // трансляция сообщения подключенным клиентам
         protected internal void BroadcastMessage(string message, string id)
         {
-            byte[] data = Encoding.Unicode.GetBytes(message);
-            for (int i = 0; i < clients.Count; i++)
+            message = Regex.Replace(message, "[ ]+", " ");
+            foreach(var client in clients)
             {
-                if (clients[i].Id != id) // если id клиента не равно id отправляющего
-                {
-                    clients[i].SendMessage(message);
-                }
+                client.SendMessage(message);
             }
         }
+
         // отключение всех клиентов
         protected internal void Disconnect()
         {

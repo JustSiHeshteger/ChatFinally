@@ -9,13 +9,32 @@ namespace Server
 {
     public class ClientObject
     {
-        protected internal string Id { get; private set; }
-        protected internal NetworkStream Stream { get; private set; }
+        private readonly Random rnd = new Random();
+        private readonly List<string> _inputUser = new List<string>()
+        {
+            "вошел в чат",
+            "влетел с ноги",
+            "прилетел на штанах-парашютах",
+            "вылез из канавы",
+            "установил соединение",
+            "убежал от Никитиной"
+        };
+        private readonly List<string> _outputUser = new List<string>()
+        {
+            "убился",
+            "умер насмерть",
+            "прыгнул в канаву",
+            "отключился",
+            "стал dead inside",
+            "прекратил общение"
+        };
         string userName;
-        TcpClient client;
-        ServerObject server; // объект сервера
+        readonly TcpClient client;
+        readonly ServerObject server; // объект сервера
         BinaryWriter _writer;
 
+        protected internal string Id { get; private set; }
+        protected internal NetworkStream Stream { get; private set; }
         public ClientObject(TcpClient tcpClient, ServerObject serverObject)
         {
             Id = Guid.NewGuid().ToString();
@@ -36,7 +55,7 @@ namespace Server
                 // получаем имя пользователя
                 string message = _reader.ReadString();
                 userName = message;
-                message = userName + " вошел в чат";
+                message = $"{userName} {_inputUser[rnd.Next(0, _inputUser.Count)]}";
 
                 // посылаем сообщение о входе в чат всем подключенным пользователям
                 server.BroadcastMessage(message, this.Id);
@@ -47,13 +66,13 @@ namespace Server
                     try
                     {
                         message = _reader.ReadString();
-                        message = String.Format("{0}: {1}", userName, message);
+                        message = String.Format($"{userName}: {message}");
                         Console.WriteLine(message);
                         server.BroadcastMessage(message, this.Id);
                     }
                     catch
                     {
-                        message = String.Format("{0}: покинул чат", userName);
+                        message = String.Format($"{userName}: {_outputUser[rnd.Next(0, _outputUser.Count)]}");
                         Console.WriteLine(message);
                         server.BroadcastMessage(message, this.Id);
                         break;

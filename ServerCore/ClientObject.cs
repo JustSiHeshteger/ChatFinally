@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Net.Sockets;
 using System.Text;
-using System.IO;
+using System.Text.Json;
 
-namespace Server
+namespace ServerCore
 {
     public class ClientObject
     {
@@ -17,7 +17,7 @@ namespace Server
             "прилетел на штанах-парашютах",
             "вылез из канавы",
             "установил соединение",
-            "убежал от Никитиной"
+            "пришел от Никитиной"
         };
         private readonly List<string> _outputUser = new List<string>()
         {
@@ -28,7 +28,6 @@ namespace Server
             "стал dead inside",
             "прекратил общение"
         };
-        string userName;
         readonly TcpClient client;
         readonly ServerObject server; // объект сервера
         BinaryWriter _writer;
@@ -52,30 +51,26 @@ namespace Server
                 _writer = new BinaryWriter(Stream, Encoding.Unicode, false);
                 var _reader = new BinaryReader(Stream, Encoding.Unicode, false);
 
-                // получаем имя пользователя
-                string message = _reader.ReadString();
-                userName = message;
-                message = $"{userName} {_inputUser[rnd.Next(0, _inputUser.Count)]}";
+                BaseMessage message = JsonSerializer.Deserialize<BaseMessage>(_reader.ReadString());
+                message.Message = _inputUser[rnd.Next(0, _inputUser.Count)];
 
-                // посылаем сообщение о входе в чат всем подключенным пользователям
                 server.BroadcastMessage(message, this.Id);
-                Console.WriteLine(message);
-                // в бесконечном цикле получаем сообщения от клиента
+                Console.WriteLine($"{message.UserName} {message.Message}");
+
                 while (true)
                 {
                     try
                     {
-                        message = _reader.ReadString();
-                        message = String.Format($"{userName}: {message}");
-                        Console.WriteLine(message);
-                        //Добавить сериализацию
+                        message = JsonSerializer.Deserialize<BaseMessage>(_reader.ReadString());
+                        Console.WriteLine($"{message.UserName} {message.Message}");
                         server.BroadcastMessage(message, this.Id);
                     }
-                    catch
+                    catch 
                     {
-                        message = String.Format($"{userName}: {_outputUser[rnd.Next(0, _outputUser.Count)]}");
-                        Console.WriteLine(message);
+                        message = JsonSerializer.Deserialize<BaseMessage>(_reader.ReadString());
+                        message.Message = _outputUser[rnd.Next(0, _outputUser.Count)];
                         server.BroadcastMessage(message, this.Id);
+                        Console.WriteLine($"{message.UserName} {message.Message}");
                         break;
                     }
                 }
@@ -86,19 +81,17 @@ namespace Server
             }
             finally
             {
-                // в случае выхода из цикла закрываем ресурсы
                 server.RemoveConnection(this.Id);
                 Close();
             }
         }
 
-        // чтение входящего сообщения и преобразование в строку
-        internal void SendMessage(string message)
+        internal void SendMessage(BaseMessage message)
         {
-            this._writer.Write(message);
+            string mes = JsonSerializer.Serialize(message);
+            this._writer.Write(mes);
         }
 
-        // закрытие подключения
         protected internal void Close()
         {
             if (Stream != null)

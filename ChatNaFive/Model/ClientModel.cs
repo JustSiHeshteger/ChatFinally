@@ -54,7 +54,7 @@ namespace ChatNaFive.Model
                     _writer.Write(UserName);
 
                     // запускаем новый поток для получения данных
-                    Thread receiveThread = new(ReceiveMessage); //Было new Thread(new ThreadStart(ReceiveMessage))
+                    Thread receiveThread = new(ReceiveMessage);
                     receiveThread.Start(); //старт потока
                 }
                 catch (Exception ex)

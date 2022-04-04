@@ -6,9 +6,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 
-namespace Server
+namespace ServerCore
 {
     public class ServerObject
     {
@@ -53,10 +52,10 @@ namespace Server
         }
 
         // трансляция сообщения подключенным клиентам
-        protected internal void BroadcastMessage(string message, string id)
+        protected internal void BroadcastMessage(BaseMessage message, string id)
         {
-            message = Regex.Replace(message, "[ ]+", " ").Trim();
-            foreach(var client in clients)
+            message.Message = Regex.Replace(message.Message, "[ ]+", " ").Trim();
+            foreach (var client in clients)
             {
                 client.SendMessage(message);
             }

@@ -31,6 +31,7 @@ namespace ServerCore
         readonly TcpClient client;
         readonly ServerObject server; // объект сервера
         BinaryWriter _writer;
+        BinaryReader _reader;
 
         protected internal string Id { get; private set; }
         protected internal NetworkStream Stream { get; private set; }
@@ -49,9 +50,9 @@ namespace ServerCore
                 Stream = client.GetStream();
 
                 _writer = new BinaryWriter(Stream, Encoding.Unicode, false);
-                var _reader = new BinaryReader(Stream, Encoding.Unicode, false);
+                _reader = new BinaryReader(Stream, Encoding.Unicode, false);
 
-                BaseMessage message = JsonSerializer.Deserialize<BaseMessage>(_reader.ReadString());
+                var message = JsonSerializer.Deserialize<BaseMessage>(_reader.ReadString());
                 message.Message = _inputUser[rnd.Next(0, _inputUser.Count)];
 
                 server.BroadcastMessage(message, this.Id);

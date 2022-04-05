@@ -3,11 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31829.152
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chat", "Chat\Chat.csproj", "{ADE4CC85-0E7F-4817-9E4A-E2BEB670723F}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatNaFive", "ChatNaFive\ChatNaFive.csproj", "{04B3E9ED-BA00-46E8-BFF1-11F024B76E1D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerCore", "ServerCore\ServerCore.csproj", "{F00CB163-ABA0-477D-9621-B7BF32556D29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerCore", "ServerCore\ServerCore.csproj", "{F00CB163-ABA0-477D-9621-B7BF32556D29}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,10 +13,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{ADE4CC85-0E7F-4817-9E4A-E2BEB670723F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{ADE4CC85-0E7F-4817-9E4A-E2BEB670723F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{ADE4CC85-0E7F-4817-9E4A-E2BEB670723F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{ADE4CC85-0E7F-4817-9E4A-E2BEB670723F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{04B3E9ED-BA00-46E8-BFF1-11F024B76E1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{04B3E9ED-BA00-46E8-BFF1-11F024B76E1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{04B3E9ED-BA00-46E8-BFF1-11F024B76E1D}.Release|Any CPU.ActiveCfg = Release|Any CPU

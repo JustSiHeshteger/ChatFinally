@@ -57,6 +57,14 @@ namespace ServerCore
             message.Message = Regex.Replace(message.Message, "[ ]+", " ").Trim();
             foreach (var client in clients)
             {
+                if (id == client.Id)
+                {
+                    message.ThisUser = true;
+                }
+                else
+                {
+                    message.ThisUser = false;
+                }
                 client.SendMessage(message);
             }
         }

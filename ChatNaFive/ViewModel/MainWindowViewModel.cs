@@ -18,10 +18,11 @@ namespace ChatNaFive.ViewModel
         private string _userName;
         private string _message;
         private string _exception;
-        private readonly ClientModel _clientModel;
+        private readonly ConnectionService _clientModel;
         private readonly IContext _context;
 
-        public ObservableCollection<string> Messages { get; }
+        public ObservableCollection<BaseMessage> Messages { get; }
+        public ObservableCollection<BaseMessage> OurMessages { get; }
 
         #endregion
 
@@ -53,9 +54,18 @@ namespace ChatNaFive.ViewModel
         #endregion
 
         #region Методы
-        public void SetReceiveMessage(string message)
+        public void SetReceiveMessage(BaseMessage message)
         {
-            _context.Invoke(() => Messages.Add(message));
+            if (message.ThisUser)
+            {
+                _context.Invoke(() => OurMessages.Add(message));
+                _context.Invoke(() => Messages.Add(null));
+            }
+            else
+            {
+                _context.Invoke(() => Messages.Add(message));
+                _context.Invoke(() => OurMessages.Add(null));
+            }
         }
 
         public void SetException(string ex)
@@ -90,7 +100,8 @@ namespace ChatNaFive.ViewModel
         {
             Task.Run(() =>
             {
-                _clientModel.SendMessage(this.Message);
+                var message = new BaseMessage { UserName = this.UserName, Message = this.Message, Date = System.DateTime.Now };
+                _clientModel.SendMessage(message);
             });
             Message = string.Empty;
         }
@@ -107,8 +118,12 @@ namespace ChatNaFive.ViewModel
             #endregion
 
             _context = new WpfDipatcherContext();
-            _clientModel = new ClientModel(this);
-            Messages = new ObservableCollection<string>();
+            _clientModel = new ConnectionService(this);
+            Messages = new ObservableCollection<BaseMessage>();
+            OurMessages = new ObservableCollection<BaseMessage>();
+
+            SetReceiveMessage(new BaseMessage { UserName = "asd", Date = System.DateTime.Now, Message = "привет", ThisUser = true });
+            SetReceiveMessage(new BaseMessage { UserName = ";aosiv", Date = System.DateTime.Now, Message = "привет", ThisUser = false });
         }
     }
 }

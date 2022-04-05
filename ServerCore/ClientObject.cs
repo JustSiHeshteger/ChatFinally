@@ -17,7 +17,7 @@ namespace ServerCore
             "прилетел на штанах-парашютах",
             "вылез из канавы",
             "установил соединение",
-            "пришел от Никитиной"
+            "убежал от Никитиной"
         };
         private readonly List<string> _outputUser = new List<string>()
         {

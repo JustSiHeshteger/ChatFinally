@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Threading;
 
-namespace Server
+namespace ServerCore
 {
     class Program
     {
         static ServerObject server; // сервер
         static Thread listenThread; // потока для прослушивания
-        static void Main(string[] args)
+        static void Main()
         {
-            
+
             try
             {
                 server = new ServerObject();
@@ -21,7 +21,7 @@ namespace Server
                 server.Disconnect();
                 Console.WriteLine(ex.Message);
             }
-            
+
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using ChatNaFive.ViewModel.Base;
 using System.Collections.ObjectModel;
 using ChatNaFive.Model;
+using System;
 using System.Collections.Generic;
 using System.Windows.Input;
 using System.Threading.Tasks;
@@ -18,10 +19,10 @@ namespace ChatNaFive.ViewModel
         private string _userName;
         private string _message;
         private string _exception;
-        private readonly ClientModel _clientModel;
+        private readonly ConnectionService _clientModel;
         private readonly IContext _context;
 
-        public ObservableCollection<string> Messages { get; }
+        public ObservableCollection<BaseMessage> Messages { get; }
 
         #endregion
 
@@ -53,9 +54,17 @@ namespace ChatNaFive.ViewModel
         #endregion
 
         #region Методы
-        public void SetReceiveMessage(string message)
+        public void SetReceiveMessage(BaseMessage message)
         {
-            _context.Invoke(() => Messages.Add(message));
+            if (message.ThisUser)
+            {
+                message.UserName = "Вы";
+                _context.Invoke(() => Messages.Add(message));
+            }
+            else
+            {
+                _context.Invoke(() => Messages.Add(message));
+            }
         }
 
         public void SetException(string ex)
@@ -90,8 +99,10 @@ namespace ChatNaFive.ViewModel
         {
             Task.Run(() =>
             {
-                _clientModel.SendMessage(this.Message);
+                var message = new BaseMessage { UserName = this.UserName, Message = this.Message, Date = DateTime.Now.ToShortTimeString() };
+                _clientModel.SendMessage(message);
             });
+            Message = string.Empty;
         }
 
         private bool CanSendMessageCommandExecute(object p) => true;
@@ -106,8 +117,8 @@ namespace ChatNaFive.ViewModel
             #endregion
 
             _context = new WpfDipatcherContext();
-            _clientModel = new ClientModel(this);
-            Messages = new ObservableCollection<string>();
+            _clientModel = new ConnectionService(this);
+            Messages = new ObservableCollection<BaseMessage>();
         }
     }
 }

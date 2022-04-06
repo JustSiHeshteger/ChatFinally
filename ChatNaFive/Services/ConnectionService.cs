@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using ChatNaFive.ViewModel;
+using System.Text.Json;
 
 namespace ChatNaFive.Model
 {
-    internal class ClientModel
+    internal class ConnectionService
     {
         private const string host = "92.101.223.197";
         private const int port = 9002;
@@ -22,7 +21,7 @@ namespace ChatNaFive.Model
         private BinaryWriter _writer;
         private MainWindowViewModel _mvvm;
 
-        public ClientModel(MainWindowViewModel mvvm)
+        public ConnectionService(MainWindowViewModel mvvm)
         {
             if (mvvm != null)
                 this.MVVM = mvvm;
@@ -50,10 +49,12 @@ namespace ChatNaFive.Model
                     _reader = new BinaryReader(stream, Encoding.Unicode, true);
                     _writer = new BinaryWriter(stream, Encoding.Unicode, true);
 
-                    _writer.Write(UserName);
+                    string message = JsonSerializer.Serialize(new BaseMessage { UserName = UserName, Message = "", Date = DateTime.Now.ToShortTimeString() });
+
+                    _writer.Write(message);
 
                     // запускаем новый поток для получения данных
-                    Thread receiveThread = new(ReceiveMessage); //Было new Thread(new ThreadStart(ReceiveMessage))
+                    Thread receiveThread = new(ReceiveMessage);
                     receiveThread.Start(); //старт потока
                 }
                 catch (Exception ex)
@@ -64,12 +65,15 @@ namespace ChatNaFive.Model
         }
 
         // отправка сообщений
-        public void SendMessage(string OtputMessage)
+        public void SendMessage(BaseMessage OtputMessage)
         {
             try
             {
-                if (_writer != null) 
-                    _writer.Write(OtputMessage);
+                if (_writer != null)
+                {
+                    string message = JsonSerializer.Serialize(OtputMessage);
+                    _writer.Write(message);
+                }
             }
             catch (Exception ex)
             {
@@ -84,7 +88,7 @@ namespace ChatNaFive.Model
             {
                 try
                 {
-                    string message = _reader.ReadString();
+                    var message = JsonSerializer.Deserialize<BaseMessage>(_reader.ReadString());
                     MVVM.SetReceiveMessage(message);
                 }
                 catch (Exception ex)

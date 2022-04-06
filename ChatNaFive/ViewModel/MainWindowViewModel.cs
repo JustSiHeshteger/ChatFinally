@@ -119,9 +119,6 @@ namespace ChatNaFive.ViewModel
             _context = new WpfDipatcherContext();
             _clientModel = new ConnectionService(this);
             Messages = new ObservableCollection<BaseMessage>();
-
-            SetReceiveMessage(new BaseMessage { UserName = "asd", Date = DateTime.Now.ToShortTimeString(), Message = "приве;qhF;Ohwefioih3;oi3ifh\n;oweghf;owif;iEF;OB;oef;uoabwg4;fiubawi;uebfuqbwEFPUB;ewufbgpiuwebF;OUQH43WOUFHBPQUORBGAIUVA;WHEFISLHN;VQUWBEIAFHN;OUEZKRSEFNIPERAU;VSDNVLDт", ThisUser = true });
-            SetReceiveMessage(new BaseMessage { UserName = ";aosiv", Date = DateTime.Now.ToShortTimeString(), Message = "прприве;qhF;Ohwefioih3;oi3ifh\n;oweghf;owif;iEF;OB;oef;uoabwg4;fiubawi;uebfuqbwEFPUB;ewufbgpiuwebF;OUQH43WOUFHBPQUORBGAIUVA;WHEFISLHN;VQUWBEIAFHN;OUEZKRSEFNIPERAU;VSDNVLDт", ThisUser = false });
         }
     }
 }

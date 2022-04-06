@@ -1,6 +1,7 @@
 ﻿using ChatNaFive.ViewModel.Base;
 using System.Collections.ObjectModel;
 using ChatNaFive.Model;
+using System;
 using System.Collections.Generic;
 using System.Windows.Input;
 using System.Threading.Tasks;
@@ -22,7 +23,6 @@ namespace ChatNaFive.ViewModel
         private readonly IContext _context;
 
         public ObservableCollection<BaseMessage> Messages { get; }
-        public ObservableCollection<BaseMessage> OurMessages { get; }
 
         #endregion
 
@@ -58,13 +58,12 @@ namespace ChatNaFive.ViewModel
         {
             if (message.ThisUser)
             {
-                _context.Invoke(() => OurMessages.Add(message));
-                _context.Invoke(() => Messages.Add(null));
+                message.UserName = "Вы";
+                _context.Invoke(() => Messages.Add(message));
             }
             else
             {
                 _context.Invoke(() => Messages.Add(message));
-                _context.Invoke(() => OurMessages.Add(null));
             }
         }
 
@@ -100,7 +99,7 @@ namespace ChatNaFive.ViewModel
         {
             Task.Run(() =>
             {
-                var message = new BaseMessage { UserName = this.UserName, Message = this.Message, Date = System.DateTime.Now };
+                var message = new BaseMessage { UserName = this.UserName, Message = this.Message, Date = DateTime.Now.ToShortTimeString() };
                 _clientModel.SendMessage(message);
             });
             Message = string.Empty;
@@ -120,10 +119,9 @@ namespace ChatNaFive.ViewModel
             _context = new WpfDipatcherContext();
             _clientModel = new ConnectionService(this);
             Messages = new ObservableCollection<BaseMessage>();
-            OurMessages = new ObservableCollection<BaseMessage>();
 
-            SetReceiveMessage(new BaseMessage { UserName = "asd", Date = System.DateTime.Now, Message = "привет", ThisUser = true });
-            SetReceiveMessage(new BaseMessage { UserName = ";aosiv", Date = System.DateTime.Now, Message = "привет", ThisUser = false });
+            SetReceiveMessage(new BaseMessage { UserName = "asd", Date = DateTime.Now.ToShortTimeString(), Message = "приве;qhF;Ohwefioih3;oi3ifh\n;oweghf;owif;iEF;OB;oef;uoabwg4;fiubawi;uebfuqbwEFPUB;ewufbgpiuwebF;OUQH43WOUFHBPQUORBGAIUVA;WHEFISLHN;VQUWBEIAFHN;OUEZKRSEFNIPERAU;VSDNVLDт", ThisUser = true });
+            SetReceiveMessage(new BaseMessage { UserName = ";aosiv", Date = DateTime.Now.ToShortTimeString(), Message = "прприве;qhF;Ohwefioih3;oi3ifh\n;oweghf;owif;iEF;OB;oef;uoabwg4;fiubawi;uebfuqbwEFPUB;ewufbgpiuwebF;OUQH43WOUFHBPQUORBGAIUVA;WHEFISLHN;VQUWBEIAFHN;OUEZKRSEFNIPERAU;VSDNVLDт", ThisUser = false });
         }
     }
 }

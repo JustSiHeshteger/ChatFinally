@@ -8,7 +8,8 @@
         xmlns:viewmodel="clr-namespace:ChatNaFive.ViewModel"
         xmlns:commands="clr-namespace:ChatNaFive.Infrastructure.Commands"
         mc:Ignorable="d"
-        Height="450" Width="800" WindowStyle="None">
+        Height="450" Width="800" WindowStyle="None"
+        MinHeight="450" MinWidth="800">
 
     <Window.DataContext>
         <viewmodel:MainWindowViewModel/>
@@ -109,24 +110,8 @@
 
                 <Grid Grid.Row="1">
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition/>
-                            <ColumnDefinition/>
-                        </Grid.ColumnDefinitions>
-
-                        <!--Пришедшие сообщения-->
-                        <Grid Grid.Column="0">
-                            <ListBox ItemsSource="{Binding Messages}" ItemContainerStyle="{StaticResource ListBoxItem}">
-
-                            </ListBox>
-                        </Grid>
-
-                        <!--Наши сообщения-->
-                        <Grid Grid.Column="1">
-                            <ListBox ItemsSource="{Binding OurMessages}" ItemContainerStyle="{StaticResource ListBoxItem}">
-
-                            </ListBox>
-                        </Grid>
+                        <ListBox ItemsSource="{Binding Messages}" ItemContainerStyle="{StaticResource ListBoxItem}">
+                        </ListBox>
                     </Grid>
 
                     

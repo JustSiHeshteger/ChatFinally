@@ -12,6 +12,6 @@ namespace ChatNaFive.Model
         public string UserName { get; set; }
         public bool ThisUser { get; set; }
         public string Message { get; set; }
-        public DateTime Date { get; set; }
+        public string Date { get; set; }
     }
 }

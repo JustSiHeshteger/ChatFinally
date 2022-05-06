@@ -11,7 +11,7 @@ namespace ChatNaFive.Model
 {
     internal class ConnectionService
     {
-        private const string host = "92.101.223.197";
+        private const string host = "3.73.109.65";
         private const int port = 9002;
 
         private string _userName;
@@ -19,25 +19,20 @@ namespace ChatNaFive.Model
         private NetworkStream stream;
         private BinaryReader _reader;
         private BinaryWriter _writer;
-        private MainWindowViewModel _mvvm;
+        private readonly MainWindowViewModel MVVM;
 
         public ConnectionService(MainWindowViewModel mvvm)
         {
-            if (mvvm != null)
-                this.MVVM = mvvm;
+            this.MVVM = mvvm;
         }
+
         public string UserName 
         { 
             get => _userName; 
             set => _userName = value; 
         }
-        public  MainWindowViewModel MVVM
-        {
-            get => _mvvm;
-            set => _mvvm = value;
-        }
 
-        async public void ConnectAsync()
+        public async void ConnectAsync()
         {
             await Task.Run(() => 
             {
@@ -53,7 +48,6 @@ namespace ChatNaFive.Model
 
                     _writer.Write(message);
 
-                    // запускаем новый поток для получения данных
                     Thread receiveThread = new(ReceiveMessage);
                     receiveThread.Start(); //старт потока
                 }

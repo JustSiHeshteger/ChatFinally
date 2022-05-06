@@ -67,6 +67,37 @@ namespace ChatNaFive.ViewModel
             }
         }
 
+        public void SetReceiveJsonMessage(JsonMessage jsonMessage)
+        {
+            switch (jsonMessage.Method)
+            {
+                case "GETMESSAGES":
+                    break;
+                case "GETUSERS":
+                    try
+                    {
+                        var message = (BaseMessage)jsonMessage.Message;
+
+                        if (message.ThisUser)
+                        {
+                            message.UserName = "Вы";
+                            _context.Invoke(() => Messages.Add(message));
+                        }
+                        else
+                            _context.Invoke(() => Messages.Add(message));
+                    }
+                    catch(Exception ex)
+                    {
+                        this.Exception = ex.Message;
+                    }
+                    
+                    break;
+                default:
+                    this.Exception = "Поступила несуществующая команда";
+                    break;
+            }
+        }
+
         public void SetException(string ex)
         {
             Exception = ex;
@@ -81,12 +112,8 @@ namespace ChatNaFive.ViewModel
 
         private void OnEnterInChatCommandExecuted(object p)
         {
-            
-            Task.Run(() =>
-            {
-                _clientModel.UserName = UserName;
-                _clientModel.ConnectAsync();
-            });
+            _clientModel.UserName = UserName;
+            _clientModel.ConnectAsync();
         }
 
         #endregion
@@ -97,11 +124,9 @@ namespace ChatNaFive.ViewModel
 
         private void OnSendMessageCommandExecuted(object p)
         {
-            Task.Run(() =>
-            {
-                var message = new BaseMessage { UserName = this.UserName, Message = this.Message, Date = DateTime.Now.ToShortTimeString() };
-                _clientModel.SendMessage(message);
-            });
+            var message = new BaseMessage { UserName = this.UserName, Message = this.Message, Date = DateTime.Now.ToShortTimeString() };
+            var jsonMessage = new JsonMessage { Method = "GETMESSAGES", Message = message };
+            _clientModel.SendJsonMessageAsync(jsonMessage);
             Message = string.Empty;
         }
 

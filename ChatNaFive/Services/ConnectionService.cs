@@ -59,14 +59,36 @@ namespace ChatNaFive.Model
         }
 
         // отправка сообщений
-        public void SendMessage(BaseMessage OtputMessage)
+        public async void SendMessageAsync(BaseMessage OtputMessage)
         {
             try
             {
                 if (_writer != null)
                 {
-                    string message = JsonSerializer.Serialize(OtputMessage);
-                    _writer.Write(message);
+                    await Task.Run(() =>
+                    {
+                        string message = JsonSerializer.Serialize(OtputMessage);
+                        _writer.Write(message);
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                MVVM.SetException(ex.Message);
+            }
+        }
+
+        public async void SendJsonMessageAsync(JsonMessage OtputMessage)
+        {
+            try
+            {
+                if (_writer != null)
+                {
+                    await Task.Run(() =>
+                    {
+                        string message = JsonSerializer.Serialize(OtputMessage);
+                        _writer.Write(message);
+                    });
                 }
             }
             catch (Exception ex)
@@ -93,7 +115,24 @@ namespace ChatNaFive.Model
             }
         }
 
-        void Disconnect()
+        private void ReceiveJsonMessage()
+        {
+            while (true)
+            {
+                try
+                {
+                    var message = JsonSerializer.Deserialize<JsonMessage>(_reader.ReadString());
+                    MVVM.SetReceiveJsonMessage(message);
+                }
+                catch (Exception ex)
+                {
+                    MVVM.SetException(ex.Message);
+                    Disconnect();
+                }
+            }
+        }
+
+        public void Disconnect()
         {
             if (stream != null)
                 stream.Close();//отключение потока

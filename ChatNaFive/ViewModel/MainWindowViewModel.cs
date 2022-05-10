@@ -2,11 +2,8 @@
 using System.Collections.ObjectModel;
 using ChatNaFive.Model;
 using System;
-using System.Collections.Generic;
 using System.Windows.Input;
-using System.Threading.Tasks;
 using ChatNaFive.Infrastructure.Commands;
-using System.Linq;
 using ChatNaFive.Services;
 
 namespace ChatNaFive.ViewModel
@@ -81,12 +78,8 @@ namespace ChatNaFive.ViewModel
 
         private void OnEnterInChatCommandExecuted(object p)
         {
-            
-            Task.Run(() =>
-            {
-                _clientModel.UserName = UserName;
-                _clientModel.ConnectAsync();
-            });
+            _clientModel.UserName = UserName;
+            _clientModel.ConnectAsync();
         }
 
         #endregion
@@ -97,12 +90,10 @@ namespace ChatNaFive.ViewModel
 
         private void OnSendMessageCommandExecuted(object p)
         {
-            Task.Run(() =>
-            {
-                var message = new BaseMessage { UserName = this.UserName, Message = this.Message, Date = DateTime.Now.ToShortTimeString() };
-                _clientModel.SendMessage(message);
-            });
+            var message = new BaseMessage { UserName = this.UserName, Message = this.Message, Date = DateTime.Now.ToShortTimeString() };
+            _clientModel.SendMessage(message);
             Message = string.Empty;
+            
         }
 
         private bool CanSendMessageCommandExecute(object p) => true;

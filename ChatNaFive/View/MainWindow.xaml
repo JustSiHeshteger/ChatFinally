@@ -99,13 +99,25 @@
                 </Grid.RowDefinitions>
 
                 <Grid Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBlock VerticalAlignment="Center" 
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid Grid.Column="0">
+                            <TextBlock VerticalAlignment="Center" 
                                HorizontalAlignment="Left"/>
-                    <TextBox TextWrapping="Wrap" Margin="1,2,415,10" Text="{Binding UserName}"/>
-                    <Button Content="Button" HorizontalAlignment="Left" Margin="303,0,0,0" VerticalAlignment="Center" Command="{Binding EnterInChatCommand}"/>
+                            <TextBox TextWrapping="Wrap" Text="{Binding UserName}"/>
+                        </Grid>
+
+                        <Grid Grid.Column="1">
+                            <Button Content="Button" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding EnterInChatCommand}"/>
+                        </Grid>
+
+                    </Grid>
+                    
+                    
                 </Grid>
 
                 <Grid Grid.Row="1">

@@ -124,18 +124,7 @@ namespace ChatNaFive.ViewModel
             var message = new BaseMessage { UserName = this.UserName, Message = this.Message, Date = DateTime.Now.ToShortTimeString() };
             var jsonMessage = new JsonMessage { Method = "GETMESSAGES", Message = message };
             _clientModel.SendJsonMessageAsync(jsonMessage);
-                _clientModel.SendMessage(message);
-            });
-                _clientModel.SendMessage(message);
-            });
-                _clientModel.SendMessage(message);
-            });
-                _clientModel.SendMessage(message);
-            });
-                _clientModel.SendMessage(message);
-            });
-                _clientModel.SendMessage(message);
-            });
+            //_clientModel.SendMessage(message);
             Message = string.Empty;
             
         }

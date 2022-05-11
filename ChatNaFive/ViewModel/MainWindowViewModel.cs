@@ -22,8 +22,6 @@ namespace ChatNaFive.ViewModel
         private readonly ConnectionService _clientModel;
         private readonly IContext _context;
 
-        public ObservableCollection<BaseMessage> Messages { get; }
-
         #endregion
 
         #region Свойства
@@ -51,9 +49,17 @@ namespace ChatNaFive.ViewModel
             set => Set(ref _exception, value);
         }
 
+        public ObservableCollection<BaseUser> AllUsers { get; }
+        public ObservableCollection<BaseMessage> Messages { get; }
+
         #endregion
 
         #region Методы
+
+        /// <summary>
+        /// Старый прием сообщений и установка
+        /// </summary>
+        /// <param name="message"></param>
         public void SetReceiveMessage(BaseMessage message)
         {
             if (message.ThisUser)
@@ -67,13 +73,60 @@ namespace ChatNaFive.ViewModel
             }
         }
 
+        private void SetUsers(List<BaseUser> users)
+        {
+            foreach (var user in users)
+            {
+                try
+                {
+                    switch (user.Action)
+                    {
+                        case "DELETE":
+                            if (AllUsers.Contains(user))
+                                _context.Invoke(() => AllUsers.Remove(user));
+                            break;
+
+                        case "ADD":
+                            if (!AllUsers.Contains(user))
+                                _context.Invoke(() => AllUsers.Add(user));
+                            break;
+
+                        case null:
+                            if (!AllUsers.Contains(user))
+                                _context.Invoke(() => AllUsers.Add(user));
+                            break;
+
+                        case "":
+                            if (!AllUsers.Contains(user))
+                                _context.Invoke(() => AllUsers.Add(user));
+                            break;
+
+                        default:
+                            Exception = "Получена неизвестная команда для операции с пользователем";
+                            break;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Exception = ex.Message;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Новый прием сообщений
+        /// </summary>
+        /// <param name="jsonMessage"></param>
         public void SetReceiveJsonMessage(JsonMessage jsonMessage)
         {
             switch (jsonMessage.Method)
             {
-                case "GETMESSAGES":
-                    break;
                 case "GETUSERS":
+                    var users = (List<BaseUser>)jsonMessage.Message;
+                    SetUsers(users);
+                    break;
+
+                case "GETMESSAGES":
                     try
                     {
                         var message = (BaseMessage)jsonMessage.Message;
@@ -90,8 +143,8 @@ namespace ChatNaFive.ViewModel
                     {
                         this.Exception = ex.Message;
                     }
-                    
                     break;
+
                 default:
                     this.Exception = "Поступила несуществующая команда";
                     break;
@@ -108,13 +161,13 @@ namespace ChatNaFive.ViewModel
         #region Команда для кнопки подключения
 
         private bool CanEnterInChatCommandExecute(object p) => true;
-        public ICommand EnterInChatCommand { get; }
-
         private void OnEnterInChatCommandExecuted(object p)
         {
             _clientModel.UserName = UserName;
             _clientModel.ConnectAsync();
         }
+
+        public ICommand EnterInChatCommand { get; }
 
         #endregion
 
@@ -134,16 +187,33 @@ namespace ChatNaFive.ViewModel
 
         #endregion
 
+        #region Команда для закрытия приложения
+
+        private bool CanCloseApplicationCommandExecute(object p) => true;
+        private void OnCloseApplicationCommandExecuted(object parameter) 
+        {
+            _clientModel.Disconnect();
+            Environment.Exit(0);
+        } 
+
+        public ICommand CloseApplicationCommand { get; }
+
+        #endregion
+
         public MainWindowViewModel()
         {
             #region Команды
+
             EnterInChatCommand = new ActionCommand(OnEnterInChatCommandExecuted, CanEnterInChatCommandExecute);
             SendMessageCommand = new ActionCommand(OnSendMessageCommandExecuted, CanSendMessageCommandExecute);
+            CloseApplicationCommand = new ActionCommand(OnCloseApplicationCommandExecuted, CanCloseApplicationCommandExecute);
+            
             #endregion
 
             _context = new WpfDipatcherContext();
             _clientModel = new ConnectionService(this);
             Messages = new ObservableCollection<BaseMessage>();
+            AllUsers = new ObservableCollection<BaseUser>();
         }
     }
 }

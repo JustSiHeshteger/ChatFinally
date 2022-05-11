@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace ServerCore
+namespace ServerCore.Model
 {
     [Serializable]
     public class BaseMessage

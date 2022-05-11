@@ -11,7 +11,8 @@ namespace ChatNaFive.Model
 {
     internal class ConnectionService
     {
-        private const string host = "3.73.109.65";
+        //private const string host = "3.73.109.65";
+        private const string host = "127.0.0.1";
         private const int port = 9002;
 
         private string _userName;
@@ -54,7 +55,7 @@ namespace ChatNaFive.Model
                     _writer.Write(message);
 
                     // запускаем новый поток для получения данных
-                    Thread receiveThread = new(ReceiveMessage);
+                    Thread receiveThread = new(ReceiveJsonMessage);
                     receiveThread.Start(); //старт потока
                 }
                 catch (Exception ex)

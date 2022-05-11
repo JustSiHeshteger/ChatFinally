@@ -1,9 +1,11 @@
-﻿using System;
+﻿using ServerCore.Model;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace ServerCore
 {
@@ -52,28 +54,20 @@ namespace ServerCore
                 _writer = new BinaryWriter(Stream, Encoding.Unicode, false);
                 _reader = new BinaryReader(Stream, Encoding.Unicode, false);
 
-                var message = JsonSerializer.Deserialize<BaseMessage>(_reader.ReadString());
-                message.Message = _inputUser[rnd.Next(0, _inputUser.Count)];
+                var message = JsonSerializer.Deserialize<JsonMessage>(_reader.ReadString());
 
-                server.BroadcastMessage(message, this.Id);
-                Console.WriteLine($"{message.UserName} {message.Message}");
+                if (message.Method == "GETMESSAGES")
+                {
+                    var baseMessage = (BaseMessage)message.Message;
+                    baseMessage.Message = _inputUser[rnd.Next(0, _inputUser.Count)];
+                    server.BroadcastMessage(baseMessage, this.Id);
+                    Console.WriteLine($"{baseMessage.UserName} {baseMessage.Message}");
+                }
 
                 while (true)
                 {
-                    try
-                    {
-                        message = JsonSerializer.Deserialize<BaseMessage>(_reader.ReadString());
-                        Console.WriteLine($"{message.UserName} {message.Message}");
-                        server.BroadcastMessage(message, this.Id);
-                    }
-                    catch 
-                    {
-                        message = JsonSerializer.Deserialize<BaseMessage>(_reader.ReadString());
-                        message.Message = _outputUser[rnd.Next(0, _outputUser.Count)];
-                        server.BroadcastMessage(message, this.Id);
-                        Console.WriteLine($"{message.UserName} {message.Message}");
-                        break;
-                    }
+                    message = JsonSerializer.Deserialize<JsonMessage>(_reader.ReadString());
+                    GetReceiveJsonMessage(message);
                 }
             }
             catch (Exception e)
@@ -87,7 +81,38 @@ namespace ServerCore
             }
         }
 
-        internal void SendMessage(BaseMessage message)
+        private void GetReceiveJsonMessage(JsonMessage jsonMessage)
+        {
+            switch (jsonMessage.Method)
+            {
+                case "GETUSERS":
+                    server.BroadcastUsers();
+                    break;
+
+                case "GETMESSAGES":
+                    var message = (BaseMessage)jsonMessage.Message;
+                    message.Message = Regex.Replace(message.Message, "[ ]+", " ").Trim();
+                    try
+                    {
+                        Console.WriteLine($"{message.UserName} {message.Message}");
+                        server.BroadcastMessage(message, this.Id);
+                    }
+                    catch
+                    {
+                        message.Message = _outputUser[rnd.Next(0, _outputUser.Count)];
+                        server.BroadcastMessage(message, this.Id);
+                        Console.WriteLine($"{message.UserName} {message.Message}");
+                        break;
+                    }
+                    break;
+
+                default:
+                    Console.WriteLine("Не удалось выполнить операцию. Пациент СДОХ!!!");
+                    break;
+            }
+        }
+
+        internal void SendJsonMessage(JsonMessage message)
         {
             string mes = JsonSerializer.Serialize(message);
             this._writer.Write(mes);

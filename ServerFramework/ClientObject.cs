@@ -85,7 +85,9 @@ namespace ServerFramework
                 Close();
                 var lastMessage = new BaseMessage()
                 {
-                    Message = _outputUser[rnd.Next(0, _outputUser.Count)]
+                    Message = _outputUser[rnd.Next(0, _outputUser.Count)],
+                    UserName = this.UserName,
+                    Date = DateTime.Now.ToShortTimeString()
                 };
                 server.BroadcastMessage(lastMessage, this.Id);
             }

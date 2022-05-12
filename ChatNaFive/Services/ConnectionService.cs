@@ -16,11 +16,14 @@ namespace ChatNaFive.Model
         private const int port = 9002;
 
         private string _userName;
-        private TcpClient client;
-        private NetworkStream stream;
+        private TcpClient _client;
+        private NetworkStream _stream;
         private BinaryReader _reader;
         private BinaryWriter _writer;
         private readonly MainWindowViewModel MVVM;
+
+        private Thread receiveThread;
+        private Thread usersThread;
 
         public ConnectionService(MainWindowViewModel mvvm)
         {
@@ -37,25 +40,31 @@ namespace ChatNaFive.Model
         {
             await Task.Run(() => 
             {
-                client = new TcpClient();
+                _client = new TcpClient();
                 try
                 {
-                    client.Connect(host, port);
-                    stream = client.GetStream(); // получаем поток
-                    _reader = new BinaryReader(stream, Encoding.Unicode, true);
-                    _writer = new BinaryWriter(stream, Encoding.Unicode, true);
+                    _client.Connect(host, port);
+                    _stream = _client.GetStream(); // получаем поток
+                    _reader = new BinaryReader(_stream, Encoding.Unicode, true);
+                    _writer = new BinaryWriter(_stream, Encoding.Unicode, true);
 
-                    string message = JsonSerializer.Serialize(new BaseMessage { UserName = UserName, Message = "", Date = DateTime.Now.ToShortTimeString() });
+                    var message = new BaseMessage() { UserName = UserName, Message = "", Date = DateTime.Now.ToShortTimeString() };
+                    string jsonMessage = JsonSerializer.Serialize(new JsonMessage() { Method = "GETMESSAGES", Message = message });
 
-                    _writer.Write(message);
+                    _writer.Write(jsonMessage);
 
                     // запускаем новый поток для получения данных
-                    Thread receiveThread = new(ReceiveJsonMessage);
-                    receiveThread.Start(); //старт потока
+                    receiveThread = new(ReceiveJsonMessage);
+                    usersThread = new(GetUsers);
+                    usersThread.Start();
+                    receiveThread.Start();
+
+                    MVVM.Connection = true;
                 }
                 catch (Exception ex)
                 {
-                    MVVM.SetException(ex.Message);
+                    MVVM.Exception = ex.Message;
+                    MVVM.Connection = false;
                 }
             });
         }
@@ -76,44 +85,27 @@ namespace ChatNaFive.Model
             }
             catch (Exception ex)
             {
-                MVVM.SetException(ex.Message);
+                MVVM.Exception = ex.Message;
             }
         }
 
         public async void SendJsonMessageAsync(JsonMessage OtputMessage)
         {
-            try
+            if (_writer != null)
             {
-                if (_writer != null)
+                await Task.Run(() =>
                 {
-                    await Task.Run(() =>
+                    try
                     {
                         string message = JsonSerializer.Serialize(OtputMessage);
                         _writer.Write(message);
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                MVVM.SetException(ex.Message);
-            }
-        }
-
-        // получение сообщений
-        private void ReceiveMessage()
-        {
-            while (true)
-            {
-                try
-                {
-                    var message = JsonSerializer.Deserialize<BaseMessage>(_reader.ReadString());
-                    MVVM.SetReceiveMessage(message);
-                }
-                catch (Exception ex)
-                {
-                    MVVM.SetException(ex.Message);
-                    Disconnect();
-                }
+                    }
+                    catch(Exception ex)
+                    {
+                        MVVM.Exception = ex.Message;
+                        Disconnect();
+                    }
+                });
             }
         }
 
@@ -128,18 +120,46 @@ namespace ChatNaFive.Model
                 }
                 catch (Exception ex)
                 {
-                    MVVM.SetException(ex.Message);
+                    MVVM.Exception = ex.Message;
                     Disconnect();
+                    break;
+                }
+            }
+        }
+
+        private void GetUsers()
+        {
+            while (true)
+            {
+                try
+                {
+                    _writer.Write(JsonSerializer.Serialize(new JsonMessage() { Method = "GETUSERS" }));
+                    Thread.Sleep(10000);
+                }
+                catch(Exception ex)
+                {
+                    MVVM.Exception = ex.Message;
+                    Disconnect();
+                    break;
                 }
             }
         }
 
         public void Disconnect()
         {
-            if (stream != null)
-                stream.Close();//отключение потока
-            if (client != null)
-                client.Close();//отключение клиента
+            if (_stream != null)
+                _stream.Close();
+            if (_client != null)
+                _client.Close();
+            if (_reader != null)
+                _reader.Close();
+            if (_writer != null)
+            {
+                _writer.Flush();
+                _writer.Close();
+            }
+
+            MVVM.Connection = false;
         }
     }
 }

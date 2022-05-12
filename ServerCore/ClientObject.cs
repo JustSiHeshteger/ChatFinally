@@ -36,6 +36,7 @@ namespace ServerCore
         BinaryReader _reader;
 
         protected internal string Id { get; private set; }
+        public string UserName { get; private set; }
         protected internal NetworkStream Stream { get; private set; }
         public ClientObject(TcpClient tcpClient, ServerObject serverObject)
         {
@@ -58,7 +59,10 @@ namespace ServerCore
 
                 if (message.Method == "GETMESSAGES")
                 {
-                    var baseMessage = (BaseMessage)message.Message;
+                    var baseMessage = message.Message;
+
+                    this.UserName = baseMessage.UserName;
+
                     baseMessage.Message = _inputUser[rnd.Next(0, _inputUser.Count)];
                     server.BroadcastMessage(baseMessage, this.Id);
                     Console.WriteLine($"{baseMessage.UserName} {baseMessage.Message}");
@@ -115,7 +119,8 @@ namespace ServerCore
         internal void SendJsonMessage(JsonMessage message)
         {
             string mes = JsonSerializer.Serialize(message);
-            this._writer.Write(mes);
+            if(_writer != null)
+                this._writer.Write(mes);
         }
 
         protected internal void Close()

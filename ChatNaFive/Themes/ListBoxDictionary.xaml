@@ -49,7 +49,8 @@
 
                             <!--Сообщение-->
                             <TextBlock Text="{Binding Message}" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" TextWrapping="Wrap"/>
-                            </StackPanel>
+                            
+                        </StackPanel>
 
                         <Grid.Style>
                             <Style TargetType="{x:Type Grid}">

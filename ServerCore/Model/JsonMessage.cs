@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ServerCore.Model
 {
@@ -6,6 +7,7 @@ namespace ServerCore.Model
     internal class JsonMessage
     {
         public string Method { get; set; } //что выполнить "GETUSERS" / "GETMESSAGES"
-        public object Message { get; set; } //тело сообщения 
+        public BaseMessage Message { get; set; } //тело сообщения
+        public List<BaseUser> Users { get; set; }
     }
 }

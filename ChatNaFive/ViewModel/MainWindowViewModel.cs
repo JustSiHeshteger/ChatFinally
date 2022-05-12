@@ -5,6 +5,7 @@ using System;
 using System.Windows.Input;
 using ChatNaFive.Infrastructure.Commands;
 using ChatNaFive.Services;
+using System.Collections.Generic;
 
 namespace ChatNaFive.ViewModel
 {
@@ -16,8 +17,9 @@ namespace ChatNaFive.ViewModel
         private string _userName;
         private string _message;
         private string _exception;
-        private readonly ConnectionService _clientModel;
+        private bool _connect;
         private readonly IContext _context;
+        public ConnectionService _clientModel;
 
         #endregion
 
@@ -25,7 +27,7 @@ namespace ChatNaFive.ViewModel
         public string Title
         {
             get => _title;
-            set => Set(ref _title, value); //Это то, что написали
+            set => Set(ref _title, value); 
         }
 
         public string UserName
@@ -46,6 +48,17 @@ namespace ChatNaFive.ViewModel
             set => Set(ref _exception, value);
         }
 
+        public bool Connection
+        {
+            get => _connect;
+            set 
+            {
+                if (value == true)
+                    this.Exception = string.Empty;
+                Set(ref _connect, value);
+            } 
+        }
+
         public ObservableCollection<BaseUser> AllUsers { get; }
         public ObservableCollection<BaseMessage> Messages { get; }
 
@@ -54,60 +67,15 @@ namespace ChatNaFive.ViewModel
         #region Методы
 
         /// <summary>
-        /// Старый прием сообщений и установка
+        /// Запись всех пользователей в список
         /// </summary>
-        /// <param name="message"></param>
-        public void SetReceiveMessage(BaseMessage message)
-        {
-            if (message.ThisUser)
-            {
-                message.UserName = "Вы";
-                _context.Invoke(() => Messages.Add(message));
-            }
-            else
-            {
-                _context.Invoke(() => Messages.Add(message));
-            }
-        }
-
+        /// <param name="users"></param>
         private void SetUsers(List<BaseUser> users)
         {
-            foreach (var user in users)
-            {
-                try
-                {
-                    switch (user.Action)
-                    {
-                        case "DELETE":
-                            if (AllUsers.Contains(user))
-                                _context.Invoke(() => AllUsers.Remove(user));
-                            break;
+            _context.Invoke(() => AllUsers.Clear());
 
-                        case "ADD":
-                            if (!AllUsers.Contains(user))
-                                _context.Invoke(() => AllUsers.Add(user));
-                            break;
-
-                        case null:
-                            if (!AllUsers.Contains(user))
-                                _context.Invoke(() => AllUsers.Add(user));
-                            break;
-
-                        case "":
-                            if (!AllUsers.Contains(user))
-                                _context.Invoke(() => AllUsers.Add(user));
-                            break;
-
-                        default:
-                            Exception = "Получена неизвестная команда для операции с пользователем";
-                            break;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Exception = ex.Message;
-                }
-            }
+            foreach(var user in users)
+                _context.Invoke(() => AllUsers.Add(user));
         }
 
         /// <summary>
@@ -119,7 +87,7 @@ namespace ChatNaFive.ViewModel
             switch (jsonMessage.Method)
             {
                 case "GETUSERS":
-                    var users = (List<BaseUser>)jsonMessage.Message;
+                    var users = jsonMessage.Users;
                     SetUsers(users);
                     break;
 
@@ -148,11 +116,6 @@ namespace ChatNaFive.ViewModel
             }
         }
 
-        public void SetException(string ex)
-        {
-            Exception = ex;
-        }
-
         #endregion
 
         #region Команда для кнопки подключения
@@ -160,7 +123,10 @@ namespace ChatNaFive.ViewModel
         private bool CanEnterInChatCommandExecute(object p) => true;
         private void OnEnterInChatCommandExecuted(object p)
         {
-            _clientModel.UserName = UserName;
+            _clientModel = new ConnectionService(this)
+            {
+                UserName = UserName
+            };
             _clientModel.ConnectAsync();
         }
 
@@ -171,18 +137,19 @@ namespace ChatNaFive.ViewModel
         #region Команда для кнопки отправки сoобщения
 
         public ICommand SendMessageCommand { get; }
+        private bool CanSendMessageCommandExecute(object p) => true;
 
         private void OnSendMessageCommandExecuted(object p)
         {
+            if (this.Message == null || string.IsNullOrWhiteSpace(this.Message))
+                return;
+
             var message = new BaseMessage { UserName = this.UserName, Message = this.Message, Date = DateTime.Now.ToShortTimeString() };
             var jsonMessage = new JsonMessage { Method = "GETMESSAGES", Message = message };
             _clientModel.SendJsonMessageAsync(jsonMessage);
-            //_clientModel.SendMessage(message);
             Message = string.Empty;
-            
         }
 
-        private bool CanSendMessageCommandExecute(object p) => true;
 
         #endregion
 
@@ -210,9 +177,10 @@ namespace ChatNaFive.ViewModel
             #endregion
 
             _context = new WpfDipatcherContext();
-            _clientModel = new ConnectionService(this);
             Messages = new ObservableCollection<BaseMessage>();
             AllUsers = new ObservableCollection<BaseUser>();
+
+            Connection = false;
         }
     }
 }

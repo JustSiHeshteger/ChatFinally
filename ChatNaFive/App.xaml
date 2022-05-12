@@ -10,6 +10,8 @@
                 <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
                 <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
                 <ResourceDictionary Source="./Themes/ListBoxDictionary.xaml" />
+                <ResourceDictionary Source="./Themes/UsersList.xaml" />
+                <ResourceDictionary Source="./Themes/RegistrationGrid.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

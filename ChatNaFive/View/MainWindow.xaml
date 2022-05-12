@@ -7,14 +7,16 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:viewmodel="clr-namespace:ChatNaFive.ViewModel"
         xmlns:commands="clr-namespace:ChatNaFive.Infrastructure.Commands"
+        xmlns:gif="https://github.com/XamlAnimatedGif/XamlAnimatedGif"
         mc:Ignorable="d"
-        Height="450" Width="800" WindowStyle="None"
+        Height="450" Width="800" WindowStyle="None" ResizeMode="CanResize" WindowStartupLocation="CenterScreen" 
         MinHeight="450" MinWidth="800">
 
     <Window.DataContext>
         <viewmodel:MainWindowViewModel/>
     </Window.DataContext>
     <Grid>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="30"></RowDefinition>
             <RowDefinition></RowDefinition>
@@ -22,11 +24,15 @@
             <!--Для вывода ошибок или сообщений-->
         </Grid.RowDefinitions>
 
+
         <Grid Name="ToolBar" Grid.Row="0">
+
+            <Rectangle Fill="#FF2D2D30" MouseLeftButtonDown="Rectangle_MouseLeftButtonDown"/>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
 
-                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Path=Title}">
+                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Path=Title}"
+                           Foreground="White" Margin="20, 0, 0, 0" FontSize="16" FontFamily="Arial Black" MouseLeftButtonDown="TextBlock_MouseLeftButtonDown">
                 </TextBlock>
 
             </StackPanel>
@@ -34,25 +40,25 @@
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
 
                 <StackPanel Orientation="Horizontal" Margin="0, 0, 5, 0">
-                    <Button Padding="0, 0, 0, 0" Background="White" BorderThickness="0"
+                    <Button Padding="0, 0, 0, 0" Background="Transparent" BorderThickness="0"
                             BorderBrush="White">
-                        <fa5:ImageAwesome Icon="Solid_WindowMinimize" Height="6"/>
+                        <fa5:ImageAwesome Icon="Solid_WindowMinimize" Height="6" Foreground="White"/>
                         <Button.Command>
                             <commands:HideAppkicationCommand/>
                         </Button.Command>
                     </Button>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0, 0, 5, 0">
-                    <Button Padding="0, 0, 0, 0" Background="White" BorderThickness="0">
-                        <fa5:ImageAwesome Icon="Solid_WindowRestore" Height="25"/>
+                    <Button Padding="0, 0, 0, 0"  Background="Transparent" BorderThickness="0">
+                        <fa5:ImageAwesome Icon="Regular_WindowRestore" Height="25" Foreground="White"/>
                         <Button.Command>
                             <commands:MaximizedApplicationCommand/>
                         </Button.Command>
                     </Button>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0, 0, 5, 0">
-                    <Button Padding="0, 0, 0, 0" Background="White" BorderThickness="0">
-                        <fa5:ImageAwesome Icon="Solid_WindowClose" Height="25"/>
+                    <Button Padding="0, 0, 0, 0"  Background="Transparent" BorderThickness="0">
+                        <fa5:ImageAwesome Icon="Regular_WindowClose" Height="25" Foreground="White"/>
                         <Button.Command>
                             <commands:CloseApplicationCommand/>
                         </Button.Command>
@@ -62,10 +68,39 @@
             </StackPanel>
         </Grid>
 
+        <!--Вход в чат-->
+        <Grid Grid.Row="1" Panel.ZIndex="1" Style="{StaticResource Registration}">
+
+            <Rectangle Fill="#FF686868"/>
+
+            <StackPanel Orientation="Horizontal" Panel.ZIndex="2" Height="30" 
+                        HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Margin="70, 70, 50, 100">
+                
+                <TextBox TextWrapping="Wrap" Text="{Binding UserName}" Width="250"
+                         Foreground="White" Margin="0, 0, 20, 0" FontFamily="Arial Rounded MT Bold" FontSize="16" 
+                         Cursor="IBeam" FontWeight="Bold"/>
+                <Button Height="30" Command="{Binding EnterInChatCommand}">
+                    <TextBlock Text="Подключиться"></TextBlock>
+                </Button>
+                
+            </StackPanel>
+
+            <Image gif:AnimationBehavior.SourceUri="\Resources\hahaha.gif"
+                   HorizontalAlignment="Center" VerticalAlignment="Center" 
+                   Height="200" Width="200" Panel.ZIndex="3">
+                <Image.Clip>
+                    <EllipseGeometry Center="90, 73" RadiusX="71" RadiusY="71"/>
+                </Image.Clip>
+            </Image>
+
+        </Grid>
+   
         <Grid Grid.Row="1">
+
             <!--Разделение на подключенных пользователей и чат-->
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="150"></ColumnDefinition>
+                <ColumnDefinition Width="170"></ColumnDefinition>
                 <ColumnDefinition Width="*" ></ColumnDefinition>
             </Grid.ColumnDefinitions>
 
@@ -78,11 +113,8 @@
 
                 <Grid Grid.Row="0">
                     <GroupBox Header = "Подключенные пользователи">
-                        <ListBox >
-
-                        </ListBox>
+                        <ListBox ItemsSource="{Binding AllUsers}"  ItemContainerStyle="{StaticResource ListBoxItemUser}"/>
                     </GroupBox>
-
                 </Grid>
 
                 <Grid Grid.Row="1">
@@ -104,20 +136,7 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-
-                        <Grid Grid.Column="0">
-                            <TextBlock VerticalAlignment="Center" 
-                               HorizontalAlignment="Left"/>
-                            <TextBox TextWrapping="Wrap" Text="{Binding UserName}"/>
-                        </Grid>
-
-                        <Grid Grid.Column="1">
-                            <Button Content="Button" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding EnterInChatCommand}"/>
-                        </Grid>
-
                     </Grid>
-                    
-                    
                 </Grid>
 
                 <Grid Grid.Row="1">
@@ -125,8 +144,6 @@
                         <ListBox ItemsSource="{Binding Messages}" ItemContainerStyle="{StaticResource ListBoxItem}">
                         </ListBox>
                     </Grid>
-
-                    
                 </Grid>
 
                 <Grid Grid.Row="2">
@@ -140,7 +157,7 @@
                     </Grid>
 
                     <Grid Grid.Column="1">
-                        <Button Padding="0, 0, 0, 0" Command="{Binding SendMessageCommand}">
+                        <Button Margin="0, 0, 5, 0" Command="{Binding SendMessageCommand}">
                             <fa5:ImageAwesome Icon="Brands_Tiktok" Height="20" Width="20"/>
                         </Button>
                     </Grid>
@@ -149,7 +166,8 @@
         </Grid>
 
         <Grid Grid.Row="3">
-            <TextBlock Text="{Binding Exception}"></TextBlock>
+            <Rectangle Fill="#FF686868"/>
+            <TextBlock Text="{Binding Exception}" Foreground="White"></TextBlock>
         </Grid>
     </Grid>
 </Window>

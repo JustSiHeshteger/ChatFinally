@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChatNaFive", "ChatNaFive\Ch
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerCore", "ServerCore\ServerCore.csproj", "{F00CB163-ABA0-477D-9621-B7BF32556D29}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServerFramework", "ServerFramework\ServerFramework.csproj", "{105B196E-BCF8-4285-9A56-C840C8A1DC95}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F00CB163-ABA0-477D-9621-B7BF32556D29}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F00CB163-ABA0-477D-9621-B7BF32556D29}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F00CB163-ABA0-477D-9621-B7BF32556D29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{105B196E-BCF8-4285-9A56-C840C8A1DC95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{105B196E-BCF8-4285-9A56-C840C8A1DC95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{105B196E-BCF8-4285-9A56-C840C8A1DC95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{105B196E-BCF8-4285-9A56-C840C8A1DC95}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

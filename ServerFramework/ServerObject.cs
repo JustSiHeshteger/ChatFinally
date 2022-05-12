@@ -1,43 +1,45 @@
-﻿using System;
+﻿using ServerFramework.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text.RegularExpressions;
 using System.Threading;
 
 namespace ServerFramework
 {
     public class ServerObject
     {
-        static TcpListener tcpListener; // сервер для прослушивания
-        readonly List<ClientObject> clients = new List<ClientObject>(); // все подключения
+        static TcpListener _tcpListener; // сервер для прослушивания
+        readonly List<ClientObject> _clients = new List<ClientObject>(); // все подключения
 
         protected internal void AddConnection(ClientObject clientObject)
         {
-            clients.Add(clientObject);
+            _clients.Add(clientObject);
+            BroadcastUsers();
         }
         protected internal void RemoveConnection(string id)
         {
             // получаем по id закрытое подключение
-            ClientObject client = clients.FirstOrDefault(c => c.Id == id);
-            // и удаляем его из списка подключений
+            ClientObject client = _clients.FirstOrDefault(c => c.Id == id);
             if (client != null)
-                clients.Remove(client);
+            {
+                _clients.Remove(client);
+                BroadcastUsers();
+            }
         }
         // прослушивание входящих подключений
         protected internal void Listen()
         {
             try
             {
-                tcpListener = new TcpListener(IPAddress.Any, 9002);
-                tcpListener.Start();
-                Console.WriteLine("Сервер запущен. Ожидание подключений...");
+                _tcpListener = new TcpListener(IPAddress.Any, 9002);
+                _tcpListener.Start();
+                Console.WriteLine("The server is running. Waiting for connections...");
 
                 while (true)
                 {
-                    TcpClient tcpClient = tcpListener.AcceptTcpClient();
-
+                    TcpClient tcpClient = _tcpListener.AcceptTcpClient();
                     ClientObject clientObject = new ClientObject(tcpClient, this);
                     Thread clientThread = new Thread(new ThreadStart(clientObject.Process));
                     clientThread.Start();
@@ -50,11 +52,14 @@ namespace ServerFramework
             }
         }
 
-        // трансляция сообщения подключенным клиентам
+        /// <summary>
+        /// Отправка сообщений
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="id"></param>
         protected internal void BroadcastMessage(BaseMessage message, string id)
         {
-            message.Message = Regex.Replace(message.Message, "[ ]+", " ").Trim();
-            foreach (var client in clients)
+            foreach (var client in _clients)
             {
                 if (id == client.Id)
                 {
@@ -64,18 +69,44 @@ namespace ServerFramework
                 {
                     message.ThisUser = false;
                 }
-                client.SendMessage(message);
+                var jsonMessage = new JsonMessage() { Method = "GETMESSAGES", Message = message };
+
+                client.SendJsonMessage(jsonMessage);
             }
+        }
+
+        /// <summary>
+        /// Отправка всех подключенных пользователей
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="id"></param>
+        protected internal void BroadcastUsers()
+        {
+            var users = new List<BaseUser>();
+            foreach (var client in _clients)
+            {
+                var user = new BaseUser
+                {
+                    Id = client.Id,
+                    UserName = client.UserName,
+                };
+                users.Add(user);
+            }
+
+            var jsonMessage = new JsonMessage() { Method = "GETUSERS", Users = users };
+
+            foreach (var client in _clients)
+                client.SendJsonMessage(jsonMessage);
         }
 
         // отключение всех клиентов
         protected internal void Disconnect()
         {
-            tcpListener.Stop(); //остановка сервера
+            _tcpListener.Stop(); //остановка сервера
 
-            for (int i = 0; i < clients.Count; i++)
+            for (int i = 0; i < _clients.Count; i++)
             {
-                clients[i].Close(); //отключение клиента
+                _clients[i].Close(); //отключение клиента
             }
             Environment.Exit(0); //завершение процесса
         }

@@ -24,7 +24,6 @@
             <!--Для вывода ошибок или сообщений-->
         </Grid.RowDefinitions>
 
-
         <Grid Name="ToolBar" Grid.Row="0">
 
             <Rectangle Fill="#FF2D2D30" MouseLeftButtonDown="Rectangle_MouseLeftButtonDown"/>

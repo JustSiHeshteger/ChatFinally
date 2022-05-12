@@ -1,11 +1,11 @@
-﻿using Newtonsoft.Json;
+﻿using ServerFramework.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
+using System.Text.RegularExpressions;
 
 namespace ServerFramework
 {
@@ -36,6 +36,7 @@ namespace ServerFramework
         BinaryReader _reader;
 
         protected internal string Id { get; private set; }
+        public string UserName { get; private set; }
         protected internal NetworkStream Stream { get; private set; }
         public ClientObject(TcpClient tcpClient, ServerObject serverObject)
         {
@@ -54,45 +55,78 @@ namespace ServerFramework
                 _writer = new BinaryWriter(Stream, Encoding.Unicode, false);
                 _reader = new BinaryReader(Stream, Encoding.Unicode, false);
 
-                var message = JsonConvert.DeserializeObject<BaseMessage>(_reader.ReadString());
-                message.Message = _inputUser[rnd.Next(0, _inputUser.Count)];
+                var message = JsonConvert.DeserializeObject<JsonMessage>(_reader.ReadString());
 
-                server.BroadcastMessage(message, this.Id);
-                Console.WriteLine($"{message.UserName} {message.Message}");
+                if (message.Method == "GETMESSAGES")
+                {
+                    var baseMessage = message.Message;
+
+                    this.UserName = baseMessage.UserName;
+
+                    baseMessage.Message = _inputUser[rnd.Next(0, _inputUser.Count)];
+                    server.BroadcastMessage(baseMessage, this.Id);
+                    Console.WriteLine($"{baseMessage.UserName} {baseMessage.Message}");
+                }
 
                 while (true)
                 {
-                    try
-                    {
-                        message = JsonConvert.DeserializeObject<BaseMessage>(_reader.ReadString());
-                        Console.WriteLine($"{message.UserName} {message.Message}");
-                        server.BroadcastMessage(message, this.Id);
-                    }
-                    catch
-                    {
-                        message = JsonConvert.DeserializeObject<BaseMessage>(_reader.ReadString());
-                        message.Message = _outputUser[rnd.Next(0, _outputUser.Count)];
-                        server.BroadcastMessage(message, this.Id);
-                        Console.WriteLine($"{message.UserName} {message.Message}");
-                        break;
-                    }
+                    message = JsonConvert.DeserializeObject<JsonMessage>(_reader.ReadString());
+                    GetReceiveJsonMessage(message);
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
+                Console.WriteLine($"User {this.UserName} disconnect.");
             }
             finally
             {
                 server.RemoveConnection(this.Id);
                 Close();
+                var lastMessage = new BaseMessage()
+                {
+                    Message = _outputUser[rnd.Next(0, _outputUser.Count)]
+                };
+                server.BroadcastMessage(lastMessage, this.Id);
             }
         }
 
-        internal void SendMessage(BaseMessage message)
+        private void GetReceiveJsonMessage(JsonMessage jsonMessage)
+        {
+            switch (jsonMessage.Method)
+            {
+                case "GETUSERS":
+                    server.BroadcastUsers();
+                    break;
+
+                case "GETMESSAGES":
+                    var message = (BaseMessage)jsonMessage.Message;
+                    message.Message = Regex.Replace(message.Message, "[ ]+", " ").Trim();
+                    try
+                    {
+                        Console.WriteLine($"{message.UserName} {message.Message}");
+                        server.BroadcastMessage(message, this.Id);
+                    }
+                    catch
+                    {
+                        message.Message = _outputUser[rnd.Next(0, _outputUser.Count)];
+                        server.BroadcastMessage(message, this.Id);
+                        Console.WriteLine($"{message.UserName} {message.Message}");
+                        break;
+                    }
+                    break;
+
+                default:
+                    Console.WriteLine("Не удалось выполнить операцию. Пациент СДОХ!!!");
+                    break;
+            }
+        }
+
+        internal void SendJsonMessage(JsonMessage message)
         {
             string mes = JsonConvert.SerializeObject(message);
-            this._writer.Write(mes);
+            if(_writer != null)
+                this._writer.Write(mes);
         }
 
         protected internal void Close()
